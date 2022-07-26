@@ -3,7 +3,6 @@ import sys
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-# import yfinance
 import yfinance as yf
 import flake8
 from platform import python_version
@@ -16,4 +15,10 @@ print("numpy_version: ", np.__version__)
 if __name__ == "__main__":
     # If the modules can't be imported, the following print won't happen
     print("Successfully imported the modules!")
-data = yf.download("SPY AAPL", start="2017-01-01", end="2017-04-30")
+# data = yf.download("SPY AAPL", start="2017-01-01", end="2017-04-30")
+data = yf.download(["SPY", "AAPL"])
+# print('AAPL')
+print(data["SPY"].tail(2))
+print(data['AAPL'].tail(2))
+# a = 'aaaa'
+# print(f'a :{a}\\n')
