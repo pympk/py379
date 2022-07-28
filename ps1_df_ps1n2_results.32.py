@@ -105,9 +105,9 @@ my_path = "C:/Users/ping/Desktop/my_yfinance/"
 
 
 import sys
-sys.path.insert(0, 'C:/Users/ping/MyDrive/py_files/python/py379/myUtils')
+sys.path.insert(0, 'C:/Users/ping/MyDrive/py_files/python/py379/')
 # sys.path.append('/content/drive/MyDrive/py_files/python/py379/myUtils')
-import download_AdjOHLCV
+from myUtils import download_AdjOHLCV
 file_symbols = '2021_Top1200_MktCap_n_AUM.txt'
 df_AdjOHLCV = download_AdjOHLCV(my_path + file_symbols)
 

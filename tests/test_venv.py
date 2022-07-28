@@ -14,7 +14,7 @@ if __name__ == "__main__":
     # If the modules can't be imported, the following print won't happen
     print("Successfully imported the modules!", "\n")
 
-# works in vscode and colab, give path to utils.py
+# works in vscode and colab, give path to folder with *.py files
 import sys
 sys.path.insert(0, 'C:/Users/ping/MyDrive/py_files/python/utils/utils')
 # sys.path.append('/content/drive/MyDrive/py_files/python/utils/utils')
