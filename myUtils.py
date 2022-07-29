@@ -81,7 +81,7 @@ def get_symbol_data_from_dir(dir_path, file_ext='.csv',
     """
 
     import pandas as pd
-    from util import get_file_names
+    from myUtils import get_file_names
 
     # list of .csv files in the directory
     file_names = get_file_names(dir_path, file_ext)  # ['A.csv', 'QQQ.csv', ..]
@@ -448,7 +448,7 @@ def df_symbols_close(path_symbols_data):
           closing price for that symbol.
     """
 
-    from util import get_symbol_data_from_dir
+    from myUtils import get_symbol_data_from_dir
     import pandas as pd
 
     # load symbol data into dataframes
@@ -549,7 +549,7 @@ def get_df_symbols_close(path_df_symbols_close, df_file_name,
     import pandas as pd
     import os
     import sys
-    from util import df_symbols_close, directory_files
+    from myUtils import df_symbols_close, directory_files
     from datetime import datetime
 
     # path_file_name = path_symbols_data + df_file_name
@@ -1173,7 +1173,7 @@ def dates_within_limits(index, date_start_limit=None, date_end_limit=None, iloc_
     """
 
     # import pandas as pd
-    from util import valid_start_end_dates, dates_adjacent_pivot
+    from myUtils import valid_start_end_dates, dates_adjacent_pivot
 
     if verbose:
         print('\n{}'.format('='*78))
@@ -1565,7 +1565,7 @@ def plot_symbols(symbols, path_data_dump, date_start_limit=None,
                 difference of last two 'Ulcer-Index / Moving-Window-Long'
     """
 
-    from util import pickle_load, dates_within_limits
+    from myUtils import pickle_load, dates_within_limits
     from CStick_DD_OBV_UIMW_Diff_UIMW_cache import candlestick
 
     print('+'*15 + '  ps4_plot_symbols(symbols, path_data_dump)  ' + '+'*15
@@ -1621,7 +1621,7 @@ def print_symbol_data(symbols, path_symbols_data, date_end_limit=None,
 
     import pandas as pd
     import datetime as dt  # NOQA
-    from util import pickle_load
+    from myUtils import pickle_load
 
     pd.set_option('display.width', 300)
     # pd.set_option('display.max_columns', 7)
@@ -2240,7 +2240,7 @@ def append_df(row_data, columns_drop_duplicate,
 
     import os
     import pandas as pd
-    from util import pickle_load, pickle_dump
+    from myUtils import pickle_load, pickle_dump
 
     # if df does not exists, create empty df with columns
     if not(os.path.exists(path_data_dump + filename_df)):  # does df exists?
@@ -2305,7 +2305,7 @@ def append_df_2(row_data, columns_drop_duplicate,
 
     import os
     import pandas as pd
-    from util import pickle_load, pickle_dump
+    from myUtils import pickle_load, pickle_dump
 
 
     my_file = path_data_dump + filename_df

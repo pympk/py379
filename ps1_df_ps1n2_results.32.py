@@ -109,6 +109,7 @@ sys.path.insert(0, 'C:/Users/ping/MyDrive/py_files/python/py379/')
 from myUtils import download_AdjOHLCV, pickle_dump, pickle_load
 
 verbose=False
+
 filename_pickle = 'df_OHLCV'  # pickled filename
 path_data_dump = my_path + "VSCode_dump/"
 path_symbols_file = my_path + "source/"
@@ -117,11 +118,17 @@ filename_pickle = 'df_OHLCV'  # pickled filename
 # file_symbols = '2021_Top1200_MktCap_n_AUM.txt'
 file_symbols = path_symbols_file + "test_symbols_no_XOM.txt"
 
-
+index_symbol = "XOM"  # use Exxon's date index to re-index other symbols
+df_XOM = yf.download(index_symbol)
 # download OHLCV data for symbols in file_symbols 
-df_OHLCV = download_AdjOHLCV(file_symbols, verbose=verbose)
+df_OHLCV, symbols = download_AdjOHLCV(file_symbols, verbose=verbose)
+# reindex to NYSE trading days using date index in df_XOM, weekend data are dropped 
+df_OHLCV = df_OHLCV.reindex(df_XOM.index, fill_value='NaN')
 
-
+# pickle df_OHLCV and symbols
+print(f'Full path to pickled df_OHLCV:  {path_data_dump}{filename_pickle}')
+pickle_dump(df_OHLCV, path_data_dump, filename_pickle, verbose=verbose)
+pickle_dump(symbols, path_data_dump, 'symbols', verbose=verbose)
 
 
 
