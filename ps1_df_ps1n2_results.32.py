@@ -86,7 +86,8 @@ import itertools
 # sys.path.append("/content/drive/MyDrive/py_files/python/perfstat/")
 # ########## Colab_change
 
-
+import sys
+import yfinance as yf
 from myUtils import list_dump, append_df_2
 from myUtils import print_list_in_groups, pd_lists_intersection
 from myUtils import pickle_dump, pickle_load, dates_within_limits, list_sort
@@ -97,19 +98,28 @@ from myUtils import symb_perf_stats_vectorized
 
 # ########## Colab_change
 # my_path = "G:/My Drive/stocks/MktCap2b_AUMtop1200/"
-my_path = "C:/Users/ping/Desktop/my_yfinance/"
+my_path = 'C:/Users/ping/MyDrive/stocks/MktCap2b_AUMtop1200/'
 # my_path = "/content/drive/MyDrive/stocks/MktCap2b_AUMtop1200/"
 # ########## Colab_change
 # endregion import modules
 
-
-
-import sys
+# path to myUtils
 sys.path.insert(0, 'C:/Users/ping/MyDrive/py_files/python/py379/')
 # sys.path.append('/content/drive/MyDrive/py_files/python/py379/myUtils')
-from myUtils import download_AdjOHLCV
-file_symbols = '2021_Top1200_MktCap_n_AUM.txt'
-df_AdjOHLCV = download_AdjOHLCV(my_path + file_symbols)
+from myUtils import download_AdjOHLCV, pickle_dump, pickle_load
+
+verbose=False
+filename_pickle = 'df_OHLCV'  # pickled filename
+path_data_dump = my_path + "VSCode_dump/"
+path_symbols_file = my_path + "source/"
+filename_pickle = 'df_OHLCV'  # pickled filename
+
+# file_symbols = '2021_Top1200_MktCap_n_AUM.txt'
+file_symbols = path_symbols_file + "test_symbols_no_XOM.txt"
+
+
+# download OHLCV data for symbols in file_symbols 
+df_OHLCV = download_AdjOHLCV(file_symbols, verbose=verbose)
 
 
 

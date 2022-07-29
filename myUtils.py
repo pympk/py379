@@ -2587,10 +2587,12 @@ def download_AdjOHLCV(file_symbols, verbose=False):
 
     Args:
         file_symbols(str): full path to a text file with symbol on each line
+        verbose(bool): default False
 
     Return:
         df(dataframe): dataframe with adjusted OHLCV data for symbols,
                        To fetch OHLCV data for symbol 'SPY', use df['SPY'].
+        symbols(list): list of symbols
     """
 
     import yfinance as yf
@@ -2642,4 +2644,4 @@ def download_AdjOHLCV(file_symbols, verbose=False):
         proxy=None,
     )
 
-    return df
+    return df, symbols
