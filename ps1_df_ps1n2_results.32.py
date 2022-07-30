@@ -103,20 +103,24 @@ my_path = 'C:/Users/ping/MyDrive/stocks/MktCap2b_AUMtop1200/'
 # ########## Colab_change
 # endregion import modules
 
+
+
+#+++++++++++++++
 # path to myUtils
 sys.path.insert(0, 'C:/Users/ping/MyDrive/py_files/python/py379/')
 # sys.path.append('/content/drive/MyDrive/py_files/python/py379/myUtils')
 from myUtils import download_AdjOHLCV, pickle_dump, pickle_load
 
-verbose=False
+verbose = False  # True prints more outputs
+# verbose = True  # True prints more outputs
 
 filename_pickle = 'df_OHLCV'  # pickled filename
 path_data_dump = my_path + "VSCode_dump/"
 path_symbols_file = my_path + "source/"
 filename_pickle = 'df_OHLCV'  # pickled filename
 
-# file_symbols = '2021_Top1200_MktCap_n_AUM.txt'
-file_symbols = path_symbols_file + "test_symbols_no_XOM.txt"
+file_symbols = '2021_Top1200_MktCap_n_AUM.txt'
+# file_symbols = path_symbols_file + "test_symbols_no_XOM.txt"
 
 index_symbol = "XOM"  # use Exxon's date index to re-index other symbols
 df_XOM = yf.download(index_symbol)
@@ -129,6 +133,7 @@ df_OHLCV = df_OHLCV.reindex(df_XOM.index, fill_value='NaN')
 print(f'Full path to pickled df_OHLCV:  {path_data_dump}{filename_pickle}')
 pickle_dump(df_OHLCV, path_data_dump, filename_pickle, verbose=verbose)
 pickle_dump(symbols, path_data_dump, 'symbols', verbose=verbose)
+#+++++++++++++++
 
 
 
@@ -1008,29 +1013,32 @@ def update_symbols_data():
 
 
 
-
-
-
 # region main
 # region +++ set before each run +++
-path_symbols_data = my_path + "OHLCV/"  # NOQA
+
+
+#+++++++++++++++
+# path_symbols_data = my_path + "OHLCV/"  # NOQA
+#+++++++++++++++
+
+
 path_symbols_file = my_path + "source/"
 
 # path to symbols text file
 # file_symbols = path_symbols_file + "test.txt"
-file_symbols = path_symbols_file + "2021_Top1200_MktCap_n_AUM.txt"
-file_stocks_Top1200_MktCap = path_symbols_file + "2021_MktCapTop1200.csv"
-file_etfs_Top1200_AUM = path_symbols_file + "2021_AUMtop1200.csv"
+# file_symbols = path_symbols_file + "2021_Top1200_MktCap_n_AUM.txt"
+# file_stocks_Top1200_MktCap = path_symbols_file + "2021_MktCapTop1200.csv"
+# file_etfs_Top1200_AUM = path_symbols_file + "2021_AUMtop1200.csv"
 
 # date_end_limit is the last date used in performance stats calculation
 # date_end_limit = "2020-10-23"  # test
 # # date_end_limit = '2013-02-06'  # next colab run
-date_end_limit = "2022-04-26"
+date_end_limit = "2022-07-28"
 # date_end_limit = dt.date.today().strftime("%Y-%m-%d")
 
 # re-load symbols' OHLCV data
 # force_update_df_symbols_close = True
-force_update_df_symbols_close = False
+# force_update_df_symbols_close = False
 
 # ++++ takes 9 hours to run 100 iloc_iteration ++++
 # iloc_iteration is number of dates to go back from date_end_limit
@@ -1086,7 +1094,7 @@ set_top_symbols_ranges = [
 
 # region constants
 # data dump directory paths
-path_data_dump = my_path + "VSCode_dump/"
+# path_data_dump = my_path + "VSCode_dump/"
 path_archive = my_path + "~archive/"
 # create directory if it is not there
 os.makedirs(os.path.dirname(path_data_dump), exist_ok=True)
@@ -1101,12 +1109,11 @@ days_plot = 252  # number of days to plot, use by script ps4...
 max_index_offset = max(days_plot, np.max(set_iloc_offsets))
 
 date_now = dt.date.today().strftime("%Y-%m-%d")  # today's date as string
-max_NaN_per_row = 0  # parameter for function remove_NaN_rows
+# max_NaN_per_row = 0  # parameter for function remove_NaN_rows
 print_group_size = 10  # print sorted symbols in groups
-index_symbol = "XOM"  # use Exxon's date index to re-index other symbols
+# index_symbol = "XOM"  # use Exxon's date index to re-index other symbols
 
-verbose = False  # True prints more outputs
-# verbose = True  # True prints more outputs
+
 
 # sort criteria for performance: 'CAGR', 'Std/UI', 'CAGR/Std', 'CAGR/UI'
 sort = "CAGR/UI"
@@ -1133,26 +1140,26 @@ print_format6 = "{:<20s}  {:<50s}\n"
 print_format7 = "{:<20s}  {:<50s}"
 # endregion constants
 
-# region get XOM index date
-col_names = ["date", "open", "high", "low", "close", "volume"]
-path_XOM = my_path + index_symbol + ".csv"
-# read XOM.csv, use 1st column "date" as index
-df = pd.read_csv(
-    path_symbols_data + index_symbol + ".csv",
-    names=col_names,
-    parse_dates=True,
-    index_col=0,
-)
-date_index_all_dates = df.index
+# # region get XOM index date
+# col_names = ["date", "open", "high", "low", "close", "volume"]
+# path_XOM = my_path + index_symbol + ".csv"
+# # read XOM.csv, use 1st column "date" as index
+# df = pd.read_csv(
+#     path_symbols_data + index_symbol + ".csv",
+#     names=col_names,
+#     parse_dates=True,
+#     index_col=0,
+# )
+# date_index_all_dates = df.index
 
-if verbose:
-    print("path_XOM: {}".format(path_XOM))
-    print(
-        "date_index_all_dates({}):\n{}\n".format(
-            type(date_index_all_dates), date_index_all_dates
-        )
-    )
-# endregion get XOM index date
+# if verbose:
+#     print("path_XOM: {}".format(path_XOM))
+#     print(
+#         "date_index_all_dates({}):\n{}\n".format(
+#             type(date_index_all_dates), date_index_all_dates
+#         )
+#     )
+# # endregion get XOM index date
 
 # region error check dates: throw error if date_start_limit is not in index
 if date_start_limit is not None:
