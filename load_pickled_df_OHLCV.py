@@ -7,12 +7,12 @@ from myUtils import pickle_load  # NOQA
 verbose = False  # True prints more outputs
 # verbose = True  # True prints more outputs
 
+# print OHLCV for these symbols
+mySyms = ["FTEC", "GBTC", "BTC-USD", "ETH-USD", "XOM"]
+
 my_path = "C:/Users/ping/MyDrive/stocks/MktCap2b_AUMtop1200/"
 path_data_dump = my_path + "VSCode_dump/"
 filename_pickle = "df_OHLCV"  # pickled filename
-
-# print OHLCV for these symbols
-mySyms = ["FTEC", "GBTC", "BTC-USD", "ETH-USD", "XOM"]
 
 print(f"Full path to pickled df_OHLCV:  {path_data_dump}{filename_pickle}", "\n")  # NOQA
 df_pickled = pickle_load(path_data_dump, filename_pickle, verbose=verbose)
