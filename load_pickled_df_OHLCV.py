@@ -10,8 +10,8 @@ verbose = False  # True prints more outputs
 # print OHLCV for these symbols
 mySyms = ["FTEC", "GBTC", "BTC-USD", "ETH-USD", "XOM"]
 
-my_path = "C:/Users/ping/MyDrive/stocks/MktCap2b_AUMtop1200/"
-path_data_dump = my_path + "VSCode_dump/"
+path_dir = "C:/Users/ping/MyDrive/stocks/MktCap2b_AUMtop1200/"
+path_data_dump = path_dir + "VSCode_dump/"
 filename_pickle = "df_OHLCV"  # pickled filename
 
 print(f"Full path to pickled df_OHLCV:  {path_data_dump}{filename_pickle}", "\n")  # NOQA

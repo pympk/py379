@@ -119,8 +119,12 @@ path_data_dump = my_path + "VSCode_dump/"
 path_symbols_file = my_path + "source/"
 filename_pickle = 'df_OHLCV'  # pickled filename
 
-file_symbols = '2021_Top1200_MktCap_n_AUM.txt'
-# file_symbols = path_symbols_file + "test_symbols_no_XOM.txt"
+
+
+# file_symbols = '2021_Top1200_MktCap_n_AUM.txt'
+file_symbols = path_symbols_file + "test_symbols_no_XOM.txt"
+
+
 
 index_symbol = "XOM"  # use Exxon's date index to re-index other symbols
 df_XOM = yf.download(index_symbol)
@@ -129,10 +133,14 @@ df_OHLCV, symbols = download_AdjOHLCV(file_symbols, verbose=verbose)
 # reindex to NYSE trading days using date index in df_XOM, weekend data are dropped 
 df_OHLCV = df_OHLCV.reindex(df_XOM.index, fill_value='NaN')
 
-# pickle df_OHLCV and symbols
-print(f'Full path to pickled df_OHLCV:  {path_data_dump}{filename_pickle}')
-pickle_dump(df_OHLCV, path_data_dump, filename_pickle, verbose=verbose)
-pickle_dump(symbols, path_data_dump, 'symbols', verbose=verbose)
+date_index_all_dates = df_XOM.index
+# force_update_df_symbols_close:
+
+
+# # pickle df_OHLCV and symbols
+# print(f'Full path to pickled df_OHLCV:  {path_data_dump}{filename_pickle}')
+# pickle_dump(df_OHLCV, path_data_dump, filename_pickle, verbose=verbose)
+# pickle_dump(symbols, path_data_dump, 'symbols', verbose=verbose)
 #+++++++++++++++
 
 
@@ -1161,95 +1169,95 @@ print_format7 = "{:<20s}  {:<50s}"
 #     )
 # # endregion get XOM index date
 
-# region error check dates: throw error if date_start_limit is not in index
-if date_start_limit is not None:
-    if date_start_limit not in date_index_all_dates:
-        error_msg_date_not_in_index = (
-            "\ndate_start_limit {} NOT in date_index_all_dates: \n{}\n"
-        )
-        raise (
-            ValueError(
-                error_msg_date_not_in_index.format(
-                    date_start_limit, date_index_all_dates
-                )
-            )
-        )
-# throw error if date_end_limit is not in index
-if date_end_limit is not None:
-    if date_end_limit not in date_index_all_dates:
-        error_msg_date_not_in_index = (
-            "\ndate_end_limit {} NOT in date_index_all_dates: \n{}\n"
-        )
-        raise (
-            ValueError(
-                error_msg_date_not_in_index.format(
-                    date_end_limit, date_index_all_dates
-                )
-            )
-        )
-# endregion error check dates
+# # region error check dates: throw error if date_start_limit is not in index
+# if date_start_limit is not None:
+#     if date_start_limit not in date_index_all_dates:
+#         error_msg_date_not_in_index = (
+#             "\ndate_start_limit {} NOT in date_index_all_dates: \n{}\n"
+#         )
+#         raise (
+#             ValueError(
+#                 error_msg_date_not_in_index.format(
+#                     date_start_limit, date_index_all_dates
+#                 )
+#             )
+#         )
+# # throw error if date_end_limit is not in index
+# if date_end_limit is not None:
+#     if date_end_limit not in date_index_all_dates:
+#         error_msg_date_not_in_index = (
+#             "\ndate_end_limit {} NOT in date_index_all_dates: \n{}\n"
+#         )
+#         raise (
+#             ValueError(
+#                 error_msg_date_not_in_index.format(
+#                     date_end_limit, date_index_all_dates
+#                 )
+#             )
+#         )
+# # endregion error check dates
 
-# region update symbols' data
-if force_update_df_symbols_close:  # force update
-    print("force_update_df_symbols_close==True, update_symbols_data")
-    (
-        symbols_with_numeric_data_n_valid_dates,
-        symbols_no_csv_data,
-        symbols_duplicate_dates,
-        df_symbols_close,
-        df_symbols_volume,
-    ) = update_symbols_data()
-elif not os.path.isfile(path_data_dump + "df_symbols_close"):  # file missing
-    print("file df_symbols_close DOES NOT exists, update_symbols_data")
-    (
-        symbols_with_numeric_data_n_valid_dates,
-        symbols_no_csv_data,
-        symbols_duplicate_dates,
-        df_symbols_close,
-        df_symbols_volume,
-    ) = update_symbols_data()
-else:  # check file is up to date
-    # get file's last date
-    date_last_df_symbols_close = (
-        pd.read_pickle(path_data_dump + "df_symbols_close")
-        .index[-1]
-        .strftime("%Y-%m-%d")
-    )
-    # compare file's last date to requested date limit and index's last date
-    if (
-        date_last_df_symbols_close
-        < date_end_limit
-        <= date_index_all_dates[-1].strftime("%Y-%m-%d")
-        # and is requested date limit in index
-    ) and (date_end_limit in date_index_all_dates):
-        print("df_symbols_close is not up to date, update_symbols_data")
-        (
-            symbols_with_numeric_data_n_valid_dates,
-            symbols_no_csv_data,
-            symbols_duplicate_dates,
-            df_symbols_close,
-            df_symbols_volume,
-        ) = update_symbols_data()
-    else:  # file is up to date, retrieve the data
-        print("OHLCV data is up to date, retrieving OHLCV data")
-        symbols_with_numeric_data_n_valid_dates = pickle_load(
-            path_data_dump, "symbols_with_numeric_data_n_valid_dates"
-        )
-        symbols_no_csv_data = pickle_load(
-            path_data_dump, "symbols_no_csv_data"
-        )
-        df_symbols_close = pd.read_pickle(path_data_dump + "df_symbols_close")
-        df_symbols_volume = pd.read_pickle(
-            path_data_dump + "df_symbols_volume"
-        )
-# print index, symbol
-if verbose:
-    print("symbols list")
-    print("{:<7s}  :  {:10s}  ".format("index", "symbol"))
-    # create index for list
-    for i, symbol in enumerate(symbols_with_numeric_data_n_valid_dates):
-        print("{:<7d}  :  {:10s}  ".format(i, symbol))
-# endregion update symbols' data
+# # region update symbols' data
+# if force_update_df_symbols_close:  # force update
+#     print("force_update_df_symbols_close==True, update_symbols_data")
+#     (
+#         symbols_with_numeric_data_n_valid_dates,
+#         symbols_no_csv_data,
+#         symbols_duplicate_dates,
+#         df_symbols_close,
+#         df_symbols_volume,
+#     ) = update_symbols_data()
+# elif not os.path.isfile(path_data_dump + "df_symbols_close"):  # file missing
+#     print("file df_symbols_close DOES NOT exists, update_symbols_data")
+#     (
+#         symbols_with_numeric_data_n_valid_dates,
+#         symbols_no_csv_data,
+#         symbols_duplicate_dates,
+#         df_symbols_close,
+#         df_symbols_volume,
+#     ) = update_symbols_data()
+# else:  # check file is up to date
+#     # get file's last date
+#     date_last_df_symbols_close = (
+#         pd.read_pickle(path_data_dump + "df_symbols_close")
+#         .index[-1]
+#         .strftime("%Y-%m-%d")
+#     )
+#     # compare file's last date to requested date limit and index's last date
+#     if (
+#         date_last_df_symbols_close
+#         < date_end_limit
+#         <= date_index_all_dates[-1].strftime("%Y-%m-%d")
+#         # and is requested date limit in index
+#     ) and (date_end_limit in date_index_all_dates):
+#         print("df_symbols_close is not up to date, update_symbols_data")
+#         (
+#             symbols_with_numeric_data_n_valid_dates,
+#             symbols_no_csv_data,
+#             symbols_duplicate_dates,
+#             df_symbols_close,
+#             df_symbols_volume,
+#         ) = update_symbols_data()
+#     else:  # file is up to date, retrieve the data
+#         print("OHLCV data is up to date, retrieving OHLCV data")
+#         symbols_with_numeric_data_n_valid_dates = pickle_load(
+#             path_data_dump, "symbols_with_numeric_data_n_valid_dates"
+#         )
+#         symbols_no_csv_data = pickle_load(
+#             path_data_dump, "symbols_no_csv_data"
+#         )
+#         df_symbols_close = pd.read_pickle(path_data_dump + "df_symbols_close")
+#         df_symbols_volume = pd.read_pickle(
+#             path_data_dump + "df_symbols_volume"
+#         )
+# # print index, symbol
+# if verbose:
+#     print("symbols list")
+#     print("{:<7s}  :  {:10s}  ".format("index", "symbol"))
+#     # create index for list
+#     for i, symbol in enumerate(symbols_with_numeric_data_n_valid_dates):
+#         print("{:<7d}  :  {:10s}  ".format(i, symbol))
+# # endregion update symbols' data
 
 # region get a list of end_dates to calculate performance stats
 # get iloc of date_end_limit in XOM's date index

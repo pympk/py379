@@ -1,38 +1,39 @@
-import sys
-import yfinance as yf
+def symbols_close(
+    path_dir,
+    path_data_dump,
+    filename_pickled_df_OHLCV,
+    verbose=False,
+):
 
-# path to myUtils
-sys.path.insert(0, "C:/Users/ping/MyDrive/py_files/python/py379/")
-# sys.path.append('/content/drive/MyDrive/py_files/python/py379/myUtils')
-from myUtils import download_AdjOHLCV, pickle_dump, pickle_load
+    import pandas as pd
+    from myUtils import pickle_load, pickle_dump
 
-verbose = False  # True prints more outputs
-# verbose = True  # True prints more outputs
+    df = pickle_load(path_data_dump, filename_pickled_df_OHLCV, verbose=verbose)
+    # list of symbols in df_OHLCV
+    symbols_OHLCV = list(set([i[0] for i in list(df)]))
 
-path_dir = "C:/Users/ping/MyDrive/stocks/MktCap2b_AUMtop1200/"
-path_data_dump = path_dir + "VSCode_dump/"
-path_symbols_file = path_dir + "source/"
-# filename_symbols = path_symbols_file + '2021_Top1200_MktCap_n_AUM.txt'
-filename_symbols = path_symbols_file + "test_symbols_no_XOM.txt"
-# filename_pickle = 'df_OHLCV'  # pickled filename
-filename_pickle = "df_test"  # pickled filename
+    # write symbols' Close to df_symbols_close
+    for sym in symbols_OHLCV:
+        if sym == symbols_OHLCV[0]:  # create dataframe using the 1st symbol's Close
+            df_symbols_close = pd.DataFrame(df[symbols_OHLCV[0]].Close)
+        else:  # concatenate Close on subsequent symbols
+            df_symbols_close = pd.concat([df_symbols_close, df[sym].Close], axis=1)
+    # rename column names from Close to symbol names
+    df_symbols_close.set_axis(symbols_OHLCV, axis=1, inplace=True)
 
-index_symbol = "XOM"  # use Exxon's date index to re-index other symbols
-df_XOM = yf.download(index_symbol)
-# download OHLCV data for symbols in filename_symbols
-df_OHLCV, symbols = download_AdjOHLCV(filename_symbols, verbose=verbose)
-# reindex to date index in df_XOM, weekend data are dropped
-df_OHLCV = df_OHLCV.reindex(df_XOM.index, fill_value="NaN")
+    # drop rows and columns with all NaN 
+    print(f'df_symbols_close.info before dropna:\n{df_symbols_close.info()}')
+    df_symbols_close_index_before_dropna = df_symbols_close.index
+    df_symbols_close = df_symbols_close.dropna(how='all', axis='index')  # drop all NaN rows
+    df_symbols_close = df_symbols_close.dropna(how='all', axis='columns')  # drop all NaN columns
+    print(f'df_symbols_close.info after dropna:\n{df_symbols_close.info()}')
+    # dates with all NaN in row
+    dates_dropped = df_symbols_close_index_before_dropna.difference(df_symbols_close.index)
+    # symbols (i.e. column names) with all NaN in column
+    symbols_dropped = list(set(symbols_OHLCV) - set(list(df_symbols_close)))
 
-# pickle df_OHLCV and symbols
-print(f"Full path to pickled df_OHLCV:  {path_data_dump}{filename_pickle}")
-pickle_dump(df_OHLCV, path_data_dump, filename_pickle, verbose=verbose)
-pickle_dump(symbols, path_data_dump, "symbols", verbose=verbose)
-df_pickled = pickle_load(path_data_dump, filename_pickle, verbose=verbose)
-mySyms = ["BTC-USD", "ETH-USD"]
-for sym in mySyms:
-    print(f"df_pickled[{sym}]")
-    print(df_pickled[sym], "\n")
+    pickle_dump(df_symbols_close, path_data_dump, "df_symbols_close", verbose=verbose)
+    pickle_dump(dates_dropped, path_data_dump, "df_symbols_close_dates_dropped", verbose=verbose)
+    pickle_dump(symbols_dropped, path_data_dump, "df_symbols_close_symbols_dropped", verbose=verbose)
 
-symbols_pickled = pickle_load(path_data_dump, "symbols", verbose=verbose)
-print(f"symbols_pickled:  {symbols_pickled}")
+    return df_symbols_close, dates_dropped, symbols_OHLCV, symbols_dropped

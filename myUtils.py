@@ -831,14 +831,14 @@ def pickle_load(path_pickle_dump, filename_pickle, verbose=False):
 
 def list_sort(my_list, verbose=False):
     """Given a list with duplicate elements, the function returns a list of
-       unique elements sorted in decending order of duplicate element counts.
+       unique elements sorted in descending order of duplicate element counts.
 
     Args:
         my_list(list): list with duplicate elements
         verbose(bool): enables printing of more outputs
 
     Return:
-        list_keys(list): list of unique elements in decending order of
+        list_keys(list): list of unique elements in descending order of
             duplicate element counts
         list_counts(list): list of integers corresponding to the duplicate
             element counts in list_keys
