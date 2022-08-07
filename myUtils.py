@@ -2580,8 +2580,8 @@ def NYSE_dates(date_pivot, len_list):
 
     return dates_nyse
 
-
-def yf_download_AdjOHLCV(file_symbols, verbose=False):
+######################################
+def yf_download_AdjOHLCV_old(file_symbols, verbose=False):
     """Download daily adjusted OHLCV data for symbols in file_symbols,
        and return dataframe df. To fetch OHLCV data for symbol 'SPY', use df['SPY'].
 
@@ -2604,6 +2604,68 @@ def yf_download_AdjOHLCV(file_symbols, verbose=False):
         print('symbols in file: "{}"'.format(file_symbols))
         print(
             'Leading space, trailing spaces, and empty string (i.e. "") have been stripped from file'
+        )
+
+        print("symbols: {}".format(symbols))
+        print("symbol count: {}".format(len(symbols)), "\n")
+
+    # print(f'++++  download OHLCV data  ++++')
+    df = yf.download(  # or pdr.get_data_yahoo(...
+        # tickers list or string as well
+        # tickers = "SPY AAPL MSFT",
+        tickers=symbols,
+        # use "period" instead of start/end
+        # valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
+        # (optional, default is '1mo')
+        period="max",
+        # fetch data by interval (including intraday if period < 60 days)
+        # valid intervals: 1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo
+        # (optional, default is '1d')
+        interval="1d",
+        # group by ticker (to access via data['SPY'])
+        # (optional, default is 'column')
+        group_by="ticker",
+        # adjust all OHLC automatically
+        # (optional, default is False)
+        auto_adjust=True,
+        # download pre/post regular market hours data
+        # (optional, default is False)
+        prepost=False,
+        # use threads for mass downloading? (True/False/Integer)
+        # (optional, default is True)
+        threads=True,
+        # proxy URL scheme use use when downloading?
+        # (optional, default is None)
+        proxy=None,
+    )
+
+    return df, symbols
+
+def yf_download_AdjOHLCV(file_symbols, verbose=False):
+    """Download daily adjusted OHLCV data for symbols in file_symbols,
+       and return dataframe df. To fetch OHLCV data for symbol 'SPY', use df['SPY'].
+
+    Args:
+        file_symbols(str): full path to a text file with symbol on each line
+        verbose(bool): default False
+
+    Return:
+        df(dataframe): dataframe with adjusted OHLCV data for symbols,
+                       To fetch OHLCV data for symbol 'SPY', use df['SPY'].
+        symbols(list): list of symbols
+    """
+
+    import yfinance as yf
+    from myUtils import read_symbols_file
+
+    # symbols are all uppercase, no duplicates, no empty string, and sorted
+    symbols = read_symbols_file(filename_symbols=file_symbols)
+
+    if verbose:
+        print('symbols in file: "{}"'.format(file_symbols))
+        print(
+            'Symbols in file has been cleaned.  Symbols are all uppercase,\n' +
+            'with no duplicates and no empty string. Symbol list is sorted.'
         )
 
         print("symbols: {}".format(symbols))
@@ -2730,8 +2792,13 @@ def yf_symbols_close(
     return df_symbols_close, dates_dropped, symbols_OHLCV, symbols_dropped
 
 def read_symbols_file(filename_symbols):
-    """Read symbols in text file filename_symbols. Removes leading, trailing spaces, and
-       banks (i.e. '') in the text file. Returns a list of symbols
+    """Read symbols in text file filename_symbols, clean it and return a list
+    of symbols. The cleaning process consists of:
+        Removing leading and trailing spaces
+        Removing banks (i.e. '')
+        Converting to all uppercase
+        Removing duplicates
+        Sort
 
     Args:
         filename_symbols(str): full path to a text file with symbol on each line
@@ -2745,5 +2812,8 @@ def read_symbols_file(filename_symbols):
 
     # removes '' in list of symbols, a blank line in text file makes '' in list
     symbols = list(filter(None, symbols))
+    symbols = [symbol.upper() for symbol in symbols]  # convert to upper case
+    symbols = list(set(symbols))  # remove duplicate symbols
+    list.sort(symbols)
 
     return symbols
