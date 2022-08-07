@@ -1,12 +1,12 @@
 import datetime as dt  # NOQA
-from util import plot_symbols, print_symbol_data, pickle_dump
+from myUtils import plot_symbols, print_symbol_data, pickle_dump
 
 
-symbols = ['FTEC', 'WCLD', 'SMH', 'CNRG']  # symbols to plot
+symbols = ['FTEC', 'BCI', 'BTC-USD', 'ETH-USD']  # symbols to plot
 # symbols = ['BTC-USD', 'ETH-USD', 'UNI3-USD', 'LINK-USD', 'MATIC-USD']  # symbols to plot
 
 # last date of data
-date_end_limit = '2020-08-20'
+date_end_limit = '2022-08-03'
 # date_end_limit = dt.date.today().strftime("%Y-%m-%d")
 
 # switches to print and plot symbols data

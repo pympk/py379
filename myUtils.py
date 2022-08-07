@@ -2596,14 +2596,9 @@ def yf_download_AdjOHLCV(file_symbols, verbose=False):
     """
 
     import yfinance as yf
+    from myUtils import read_symbols_file
 
-    print(f"++++  read symbols from {file_symbols}  ++++")
-    with open(file_symbols, "r") as f:  # get symbols from text file
-        # remove leading and trailing whitespaces
-        symbols = [line.strip() for line in f]
-
-    # removes '' in list of symbols, a blank line in text file makes '' in list
-    symbols = list(filter(None, symbols))
+    symbols = read_symbols_file(filename_symbols=file_symbols)
 
     if verbose:
         print('symbols in file: "{}"'.format(file_symbols))
@@ -2700,12 +2695,14 @@ def yf_symbols_close(
     # drop rows and columns with all NaN
     print(f"df_symbols_close.info before dropna:\n{df_symbols_close.info()}")
     df_symbols_close_index_before_dropna = df_symbols_close.index
+    # drop all NaN rows
     df_symbols_close = df_symbols_close.dropna(
         how="all", axis="index"
-    )  # drop all NaN rows
+    )
+    # drop all NaN columns
     df_symbols_close = df_symbols_close.dropna(
         how="all", axis="columns"
-    )  # drop all NaN columns
+    )
     print(f"df_symbols_close.info after dropna:\n{df_symbols_close.info()}")
     # dates with all NaN in row
     dates_dropped = df_symbols_close_index_before_dropna.difference(
@@ -2731,3 +2728,22 @@ def yf_symbols_close(
     )
 
     return df_symbols_close, dates_dropped, symbols_OHLCV, symbols_dropped
+
+def read_symbols_file(filename_symbols):
+    """Read symbols in text file filename_symbols. Removes leading, trailing spaces, and
+       banks (i.e. '') in the text file. Returns a list of symbols
+
+    Args:
+        filename_symbols(str): full path to a text file with symbol on each line
+
+    Return:
+        symbols(list): list of symbols
+    """
+    with open(filename_symbols, "r") as f:  # get symbols from text file
+        # remove leading and trailing whitespaces
+        symbols = [line.strip() for line in f]
+
+    # removes '' in list of symbols, a blank line in text file makes '' in list
+    symbols = list(filter(None, symbols))
+
+    return symbols
