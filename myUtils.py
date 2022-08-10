@@ -789,16 +789,14 @@ def pickle_dump(file_to_pickle, path_pickle_dump, filename_pickle,
 
     if verbose:
         print('\n{}'.format('='*78))
-        print('+ def pickle_dump(file_to_pickle, path_pickle_dump, \
-    filename_pickle)\n')
+        print('+ def pickle_dump(file_to_pickle, path_pickle_dump, filename_pickle)\n')  # NOQA
     outfile = open(path_pickle_dump + filename_pickle, 'wb')
     pickle.dump(file_to_pickle, outfile)
     outfile.close()
     if verbose:    
         print('Wrote pickled file to {}{}'
               .format(path_pickle_dump, filename_pickle))
-        print('- def pickle_dump(file_to_pickle, path_pickle_dump, \
-    filename_pickle)')
+        print('- def pickle_dump(file_to_pickle, path_pickle_dump, filename_pickle)')  # NOQA
         print('{}\n'.format('-'*78))
 
 
@@ -2581,35 +2579,25 @@ def NYSE_dates(date_pivot, len_list):
     return dates_nyse
 
 ######################################
-def yf_download_AdjOHLCV_old(file_symbols, verbose=False):
-    """Download daily adjusted OHLCV data for symbols in file_symbols,
-       and return dataframe df. To fetch OHLCV data for symbol 'SPY', use df['SPY'].
+def yf_download_AdjOHLCV(symbols, verbose=False):
+    """Download daily adjusted OHLCV data for symbols, and return dataframe df.
+    To fetch ajusted OHLCV data for symbol 'SPY', use df['SPY'].
 
     Args:
-        file_symbols(str): full path to a text file with symbol on each line
+        symbols(list): list of symbols(i.e. ['SPY',...,'AAPL'])
         verbose(bool): default False
 
     Return:
         df(dataframe): dataframe with adjusted OHLCV data for symbols,
                        To fetch OHLCV data for symbol 'SPY', use df['SPY'].
-        symbols(list): list of symbols
     """
 
     import yfinance as yf
-    from myUtils import read_symbols_file
-
-    symbols = read_symbols_file(filename_symbols=file_symbols)
 
     if verbose:
-        print('symbols in file: "{}"'.format(file_symbols))
-        print(
-            'Leading space, trailing spaces, and empty string (i.e. "") have been stripped from file'
-        )
+        print('\n{}'.format('='*78))
+        print('+ def yf_download_AdjOHLCV(symbols, verbose=False)\n')
 
-        print("symbols: {}".format(symbols))
-        print("symbol count: {}".format(len(symbols)), "\n")
-
-    # print(f'++++  download OHLCV data  ++++')
     df = yf.download(  # or pdr.get_data_yahoo(...
         # tickers list or string as well
         # tickers = "SPY AAPL MSFT",
@@ -2638,70 +2626,11 @@ def yf_download_AdjOHLCV_old(file_symbols, verbose=False):
         # (optional, default is None)
         proxy=None,
     )
+    if verbose:    
+        print('- def yf_download_AdjOHLCV(symbols, verbose=False)')    
+        print('{}\n'.format('-'*78))
 
-    return df, symbols
-
-def yf_download_AdjOHLCV(file_symbols, verbose=False):
-    """Download daily adjusted OHLCV data for symbols in file_symbols,
-       and return dataframe df. To fetch OHLCV data for symbol 'SPY', use df['SPY'].
-
-    Args:
-        file_symbols(str): full path to a text file with symbol on each line
-        verbose(bool): default False
-
-    Return:
-        df(dataframe): dataframe with adjusted OHLCV data for symbols,
-                       To fetch OHLCV data for symbol 'SPY', use df['SPY'].
-        symbols(list): list of symbols
-    """
-
-    import yfinance as yf
-    from myUtils import read_symbols_file
-
-    # symbols are all uppercase, no duplicates, no empty string, and sorted
-    symbols = read_symbols_file(filename_symbols=file_symbols)
-
-    if verbose:
-        print('symbols in file: "{}"'.format(file_symbols))
-        print(
-            'Symbols in file has been cleaned.  Symbols are all uppercase,\n' +
-            'with no duplicates and no empty string. Symbol list is sorted.'
-        )
-
-        print("symbols: {}".format(symbols))
-        print("symbol count: {}".format(len(symbols)), "\n")
-
-    # print(f'++++  download OHLCV data  ++++')
-    df = yf.download(  # or pdr.get_data_yahoo(...
-        # tickers list or string as well
-        # tickers = "SPY AAPL MSFT",
-        tickers=symbols,
-        # use "period" instead of start/end
-        # valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
-        # (optional, default is '1mo')
-        period="max",
-        # fetch data by interval (including intraday if period < 60 days)
-        # valid intervals: 1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo
-        # (optional, default is '1d')
-        interval="1d",
-        # group by ticker (to access via data['SPY'])
-        # (optional, default is 'column')
-        group_by="ticker",
-        # adjust all OHLC automatically
-        # (optional, default is False)
-        auto_adjust=True,
-        # download pre/post regular market hours data
-        # (optional, default is False)
-        prepost=False,
-        # use threads for mass downloading? (True/False/Integer)
-        # (optional, default is True)
-        threads=True,
-        # proxy URL scheme use use when downloading?
-        # (optional, default is None)
-        proxy=None,
-    )
-
-    return df, symbols
+    return df
 
 def yf_symbols_close(
     path_dir,
@@ -2733,6 +2662,10 @@ def yf_symbols_close(
     import pandas as pd
     from myUtils import pickle_load, pickle_dump
 
+    if verbose:
+        print('\n{}'.format('='*78))
+        print('+ def yf_symbols_close(path_dir, path_data_dump, filename_pickled_df_OHLCV)\n')
+
     df = pickle_load(
         path_data_dump, filename_pickled_df_OHLCV, verbose=verbose
     )
@@ -2754,8 +2687,10 @@ def yf_symbols_close(
     # rename column names from Close to symbol names
     df_symbols_close.set_axis(symbols_OHLCV, axis=1, inplace=True)
 
-    # drop rows and columns with all NaN
-    print(f"df_symbols_close.info before dropna:\n{df_symbols_close.info()}")
+    if verbose:
+        # drop rows and columns with all NaN
+        print(f"df_symbols_close.info() before dropna:")
+        print(df_symbols_close.info(), '\n')
     df_symbols_close_index_before_dropna = df_symbols_close.index
     # drop all NaN rows
     df_symbols_close = df_symbols_close.dropna(
@@ -2765,7 +2700,9 @@ def yf_symbols_close(
     df_symbols_close = df_symbols_close.dropna(
         how="all", axis="columns"
     )
-    print(f"df_symbols_close.info after dropna:\n{df_symbols_close.info()}")
+    if verbose:
+        print(f"df_symbols_close.info() after dropna:")
+        print(df_symbols_close.info(), '\n')    
     # dates with all NaN in row
     dates_dropped = df_symbols_close_index_before_dropna.difference(
         df_symbols_close.index
@@ -2788,10 +2725,13 @@ def yf_symbols_close(
         "df_OHLCV_symbols_dropped",
         verbose=verbose,
     )
+    if verbose:   
+        print('- def yf_symbols_close(path_dir, path_data_dump, filename_pickled_df_OHLCV)')
+        print('{}\n'.format('-'*78))
 
     return df_symbols_close, dates_dropped, symbols_OHLCV, symbols_dropped
 
-def read_symbols_file(filename_symbols):
+def read_symbols_file(filename_symbols, verbose=False):
     """Read symbols in text file filename_symbols, clean it and return a list
     of symbols. The cleaning process consists of:
         Removing leading and trailing spaces
@@ -2802,10 +2742,16 @@ def read_symbols_file(filename_symbols):
 
     Args:
         filename_symbols(str): full path to a text file with symbol on each line
-
+        verbose(bool): default False
+        
     Return:
         symbols(list): list of symbols
     """
+
+    if verbose:
+        print('\n{}'.format('='*78))
+        print('+ read_symbols_file(filename_symbols)\n')
+
     with open(filename_symbols, "r") as f:  # get symbols from text file
         # remove leading and trailing whitespaces
         symbols = [line.strip() for line in f]
@@ -2816,4 +2762,62 @@ def read_symbols_file(filename_symbols):
     symbols = list(set(symbols))  # remove duplicate symbols
     list.sort(symbols)
 
+    if verbose:
+        print('- read_symbols_file(filename_symbols)')
+        print('{}'.format('-'*78))
+    
     return symbols
+
+def drop_symbols_all_NaN(df, verbose=False):
+    """Reads symbols in multi-index df returned by yfinance with OHLCV.
+       Drops columns in df with symbols that have all NaN values for OHLCV.
+
+    Args:
+        df(dataframe): yfinance multi-index dataframe with symbols OHLCV
+        verbose(bool): default False
+        
+    Return:
+        df(dataframe): Multi-index dataframe with symbols OHLCV.
+            Symbols with all NaN OHLCV are dropped.
+        symbols_OHLCV(list): symbols in df_OHLCV, sorted
+        symbols_dropped(list): symbols dropped from df where their Close is all NaN
+    """
+
+    if verbose:
+        print('\n{}'.format('='*78))
+        print('+ drop_symbols_all_NaN(df)\n')
+
+    # get column names(i.e. symbols) from multi-index
+    #  column names are converted to all cap by yfinance download
+    col_syms = list(set(df.columns.get_level_values(0)))
+    col_syms.sort()
+    if verbose:
+        print(f"Symbols in dataframe: {col_syms}")
+    syms_with_NaN = []
+    for symbol in col_syms:
+        # Check for symbols with all NaN dataframe
+        # 1st .all returns a series of True/False, 2nd .all reduces to single True/False
+        if df[symbol].isna().all().all():
+            print(f"Dataframe for {symbol} is all NaN")
+            syms_with_NaN.append(symbol)
+    syms_with_NaN.sort()
+    # print(f"Symbols with all NaN OHLCV: {syms_with_NaN}")
+    print(f"Symbol's OHLCV are all NaN: {syms_with_NaN}")
+    symbols_all = list(set([i[0] for i in list(df)]))
+    symbols_all.sort()
+    if verbose:
+        print(f"df columns before dropping symbols with all NaN:\n{symbols_all}")
+    for symbol in syms_with_NaN:
+        # drop symbol from dataframe
+        df.drop(columns=[symbol], axis=1, level=0, inplace=True)
+    symbols_OHLCV = list(set([i[0] for i in list(df)]))
+    symbols_OHLCV.sort()
+    if verbose:    
+        print(f"df columns after dropping symbols with all NaN:\n{symbols_OHLCV}\n")
+    symbols_dropped = list(set(symbols_all) - set(symbols_OHLCV))
+
+    if verbose:
+        print('- drop_symbols_all_NaN(df)')
+        print('{}'.format('-'*78))
+
+    return df, symbols_OHLCV, symbols_dropped
