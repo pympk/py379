@@ -2679,10 +2679,10 @@ def yf_symbols_close(
         if (
             sym == symbols_OHLCV[0]
         ):  # create dataframe using the 1st symbol's Close
-            df_symbols_close = pd.DataFrame(df[symbols_OHLCV[0]].Close)
+            df_symbols_close = pd.DataFrame(df[symbols_OHLCV[0]].close)
         else:  # concatenate Close on subsequent symbols
             df_symbols_close = pd.concat(
-                [df_symbols_close, df[sym].Close], axis=1
+                [df_symbols_close, df[sym].close], axis=1
             )
     # rename column names from Close to symbol names
     df_symbols_close.set_axis(symbols_OHLCV, axis=1, inplace=True)
