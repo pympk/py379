@@ -2850,6 +2850,7 @@ def yf_candlestick(symbol, df, plot_chart=True):
     # https://plotly.com/python-api-reference/generated/plotly.graph_objects.Candlestick.html#plotly.graph_objects.Candlestick
     # https://plotly.com/python-api-reference/generated/plotly.graph_objects.layout.html
     # https://community.plotly.com/t/random-vertical-lines-extending-to-x-axis-on-line-chart/23462
+    # https://plotly.com/python/hover-text-and-formatting/
 
     from plotly.offline import plot
     from myUtils import symb_perf_stats, OBV_calc, UI_MW

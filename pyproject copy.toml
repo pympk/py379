@@ -11,6 +11,8 @@ numpy = "1.21.6"
 matplotlib = "^3.5.2"
 ipykernel = "^6.15.0"
 yfinance = "^0.1.70"
+plotly = "^5.9.0"
+ta-lib = {path = "TA_Lib-0.4.24-cp37-cp37m-win_amd64.whl"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

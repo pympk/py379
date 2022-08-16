@@ -10,7 +10,7 @@ filename_pickled_df_OHLCV = (
 symbols = ["FTEC", "BCI"]
 
 # date_end_limit = None
-date_end_limit = "2022-08-12"
+date_end_limit = "2022-08-15"
 # iloc_offset = None  # number of days to plot
 iloc_offset = 252  # number of days to plot
 date_start_limit = None
