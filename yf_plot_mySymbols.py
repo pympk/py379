@@ -6,11 +6,11 @@ filename_pickled_df_OHLCV = (
     "df_OHLCV"  # pickled filename reindexed to NYSE dates
 )
 
-# symbols = ['FTEC', 'BCI', 'BTC-USD', 'ETH-USD']
-symbols = ["FTEC", "BCI"]
+# symbols = ['BCI']
+symbols = ["FTEC", "BCI", "BTC-USD", "ETH-USD"]
 
 # date_end_limit = None
-date_end_limit = "2022-08-15"
+date_end_limit = "2022-08-17"
 # iloc_offset = None  # number of days to plot
 iloc_offset = 252  # number of days to plot
 date_start_limit = None
