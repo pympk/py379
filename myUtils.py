@@ -3794,10 +3794,15 @@ def yf_print_symbol_data(symbols):
         "marketCap",
         "revenueGrowth",
         "earningsGrowth",
+        "earningsQuarterlyGrowth",
+        "ebitdaMargins",
         "previousClose",
+        "fiftyTwoWeekHigh",
+        "52WeekChange",
         "revenuePerShare",
         "forwardEps",
         "trailingEps",
+        "sharesOutstanding",
         "longBusinessSummary",
     ]
     # ETF dict keys for obj.info
@@ -3842,16 +3847,22 @@ def yf_print_symbol_data(symbols):
                 value = obj.info[key]
                 if key == "marketCap":
                     print(
-                        f"{key:20}{value/1e9:>10,.3f}B"
+                        f"{key:26}{value/1e9:>10,.3f}B"
                     )  # reformat to billions
+                elif key == "sharesOutstanding":
+                    print(
+                        f"{key:26}{value/1e6:>10,.3f}M"
+                    )  # reformat to millions
+
                 elif key == "longBusinessSummary":
                     string = wrapper.fill(text=value)
                     print(f"\n{key}:\n{string}")                    
                 else:
-                    if type(value) == str:  # its a string
-                        print(f"{key:20}{value}")
+                    # if type(value) == str:  # its a string
+                    if type(value) == str or value == None:  # its a string 
+                        print(f"{key:26}{value}")
                     else:  # format as a number
-                        print(f"{key:20}{value:>10.3f}")
+                        print(f"{key:26}{value:>10.3f}")
             print("")
         elif obj.info["quoteType"] == "ETF":  # its an ETF
             symbols_etf.append(symbol)
@@ -3881,12 +3892,12 @@ def yf_print_symbol_data(symbols):
                         for k, v in sector_dict.items():
                             print(f"{k:30}{v:<20.3f}")
                 elif key == "totalAssets":
-                    print(f"{key:20}{value/1e9:<.3f}B")  # reformat to billions
+                    print(f"{key:30}{value/1e9:<.3f}B")  # reformat to billions
                 elif key == "longBusinessSummary":
                     string = wrapper.fill(text=value)
                     print(f"\n{key}:\n{string}")    
                 else:
-                    print(f"{key:20}{value}")
+                    print(f"{key:30}{value}")
             print("")
         elif obj.info["quoteType"] == "CRYPTOCURRENCY":
             symbols_cryto.append(symbol)
@@ -3894,12 +3905,12 @@ def yf_print_symbol_data(symbols):
                 value = obj.info[key]
                 if key == "marketCap" or key == "volume":
                     print(
-                        f"{key:20}{value/1e9:<,.3f}B"
+                        f"{key:26}{value/1e9:>10,.3f}B"
                     )  # reformat to billions
                 elif key == "circulatingSupply":
                     print(
-                        f"{key:20}{value/1e6:<,.3f}M"
-                    )  # reformat to billions
+                        f"{key:26}{value/1e6:>10,.3f}M"
+                    )  # reformat to millions
                 elif key == "startDate":
                     UTC_timestamp_sec = obj.info[
                         "startDate"
@@ -3908,12 +3919,12 @@ def yf_print_symbol_data(symbols):
                     startDate = datetime.fromtimestamp(
                         UTC_timestamp_sec
                     ).strftime("%Y-%m-%d")
-                    print(f"{key:20}{startDate}")  # reformat to billions
+                    print(f"{key:26}{startDate}")  # reformat to billions
                 else:
                     if type(value) == str:
-                        print(f"{key:20}{value}")
+                        print(f"{key:26}{value}")
                     else:
-                        print(f"{key:20}{value:<10,.0f}")
+                        print(f"{key:26}{value:>10,.0f}")
             print("")
         else:
             print(f'{symbol} is {obj.info["quoteType"]}')
