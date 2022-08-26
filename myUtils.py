@@ -2842,6 +2842,7 @@ def yf_candlestick(symbol, df, plot_chart=True):
             diff_UI_MW_short[-1](float): last value of diff_UI_MW_short
             diff_UI_MW_long[-1](float): last value of diff_UI_MW_long
     """
+    # 2022-08-21 change OBV's EMA period from 10 to 50, i.e.  OBV_period = 50
 
     # Reference:
     # https://www.kaggle.com/arrowsx/crypto-currency-a-plotly-sklearn-tutorial
@@ -2953,7 +2954,8 @@ def yf_candlestick(symbol, df, plot_chart=True):
     )  # simple-moving-average
 
     # ++ On-Balance-Volume ++
-    OBV_period = 10  # OBV's EMA period
+    # OBV_period = 10  # OBV's EMA period
+    OBV_period = 50  # OBV's EMA period
     OBV, OBV_EMA, OBV_slope = OBV_calc(
         df, symbol, EMA_pd=OBV_period, tail_pd=5, norm_pd=30
     )
