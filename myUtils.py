@@ -185,6 +185,8 @@ def moving_window(arr, window):
 
     Return:
         numpy.ndarray with shape [len(arr) - window + 1, window]
+            where each row has elements of the moving_window,
+            and number of elements in each row is the window size (i.e. columns)
     """
 
     import numpy as np
@@ -304,7 +306,7 @@ def nan_pad(arr_len, target_arr):
 
 
 def perf_stats_moving_window(arr_close, window=30):
-    """Calculate performace metrics using a moving-window applied to
+    """Calculate performance metrics using a moving-window applied to
        the symbol's closing price history
 
     Args:
@@ -2406,6 +2408,61 @@ def symb_perf_stats_vectorized(df_symbols_close):
         returns_std, Std_UI, CAGR, CAGR_Std, CAGR_UI
 
 
+def symb_perf_stats_vectorized_v1(df_symbols_close):
+    """Takes dataframe of symbols' close and returns symbols, period_yr,
+       drawdown, UI, max_drawdown, returns_std, Std_UI, CAGR, CAGR_Std, CAGR_UI
+       https://stackoverflow.com/questions/36750571/calculate-max-draw-down-with-a-vectorized-solution-in-python
+       http://www.tangotools.com/ui/ui.htm
+       Calculation CHECKED against: http://www.tangotools.com/ui/UlcerIndex.xls
+       Calculation VERIFIED in: symb_perf_stats_vectorized.ipynb
+
+    Args:
+        df_symbols_close(dataframe): dataframe with date as index,
+          symbol's close in columns, and symbols as column names.
+
+    Return:
+        symbols(pandas.core.indexes.base.Index): stock symbols
+        period_yr(float): years, (days in dataframe) / 252
+        drawdown(numpy array): drawdown from peak, 0.05 means 5% drawdown,
+            with date index and symbols as column names
+        UI(pandas.series float64): ulcer-index
+        max_drawdown(pandas series float64): maximum drawdown from peak
+        returns_std(pandas series float64): standard deviation of daily returns
+        Std_UI(pandas series float64): returns_std / UI
+        CAGR(pandas series float64): compounded annual growth rate
+        CAGR_Std(pandas series float64): CAGR / returns_std
+        CAGR_UI(pandas series float64): CAGR / UI
+    """
+    # v1 convert drawdown from pandas series to numpy array
+
+    import numpy as np
+
+    symbols = df_symbols_close.columns
+    df_symbols_returns = df_symbols_close / df_symbols_close.shift(1) - 1
+    # standard deviation divisor is N - ddof
+    returns_std = df_symbols_returns.std(ddof=1)
+    # +++ SET RETURNS OF FIRST ROW = 0,
+    #  otherwise drawdown calculation starts with the second row
+    df_symbols_returns.iloc[0] = 0
+    cum_returns = (1 + df_symbols_returns).cumprod()
+    
+    drawdown = cum_returns.div(cum_returns.cummax()) - 1
+    # convert from pandas Series into a NumPy array
+    drawdown = np.array(drawdown)
+
+    max_drawdown = drawdown.min()
+    UI = np.sqrt(np.sum(np.square(drawdown)) / len(drawdown))
+    Std_UI = returns_std / UI
+    period_yr = len(df_symbols_close) / 252  # 252 trading days per year
+    CAGR = (df_symbols_close.iloc[-1] / df_symbols_close.iloc[0]) \
+        ** (1 / period_yr) - 1
+    CAGR_Std = CAGR / returns_std
+    CAGR_UI = CAGR / UI
+
+    return symbols, period_yr, drawdown, UI, max_drawdown, \
+        returns_std, Std_UI, CAGR, CAGR_Std, CAGR_UI
+
+
 def concat_df(df, columns_drop_duplicate, file_df, file_df_archive, verbose=False):
     """The function concatenate dateframes df and file_df, pickles df,
     archives file_df, and returns concatenated dataframe df_concat.
@@ -2591,6 +2648,7 @@ def yf_download_AdjOHLCV(symbols, verbose=False):
         df(dataframe): dataframe with adjusted OHLCV data for symbols,
                        To fetch OHLCV data for symbol 'SPY', use df['SPY'].
     """
+    # https://stackoverflow.com/questions/69192215/python-yfinance-api-how-to-get-close-share-price-instead-of-adjusted-close-share
 
     import yfinance as yf
 
@@ -2616,6 +2674,60 @@ def yf_download_AdjOHLCV(symbols, verbose=False):
         # adjust all OHLC automatically
         # (optional, default is False)
         auto_adjust=True,
+        # download pre/post regular market hours data
+        # (optional, default is False)
+        prepost=False,
+        # use threads for mass downloading? (True/False/Integer)
+        # (optional, default is True)
+        threads=True,
+        # proxy URL scheme use use when downloading?
+        # (optional, default is None)
+        proxy=None,
+    )
+    if verbose:    
+        print('- def yf_download_AdjOHLCV(symbols, verbose=False)')    
+        print('{}\n'.format('-'*78))
+
+    return df
+
+def yf_download_AdjOHLCV_noAutoAdj(symbols, verbose=False):
+    """Download daily adjusted OHLCV data for symbols, and return dataframe df.
+    To fetch ajusted OHLCV data for symbol 'SPY', use df['SPY'].
+
+    Args:
+        symbols(list): list of symbols(i.e. ['SPY',...,'AAPL'])
+        verbose(bool): default False
+
+    Return:
+        df(dataframe): dataframe with adjusted OHLCV data for symbols,
+                       To fetch OHLCV data for symbol 'SPY', use df['SPY'].
+    """
+    # https://stackoverflow.com/questions/69192215/python-yfinance-api-how-to-get-close-share-price-instead-of-adjusted-close-share
+
+    import yfinance as yf
+
+    if verbose:
+        print('\n{}'.format('='*78))
+        print('+ def yf_download_AdjOHLCV(symbols, verbose=False)\n')
+
+    df = yf.download(  # or pdr.get_data_yahoo(...
+        # tickers list or string as well
+        # tickers = "SPY AAPL MSFT",
+        tickers=symbols,
+        # use "period" instead of start/end
+        # valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
+        # (optional, default is '1mo')
+        period="max",
+        # fetch data by interval (including intraday if period < 60 days)
+        # valid intervals: 1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo
+        # (optional, default is '1d')
+        interval="1d",
+        # group by ticker (to access via data['SPY'])
+        # (optional, default is 'column')
+        group_by="ticker",
+        # adjust all OHLC automatically
+        # (optional, default is False)
+        auto_adjust=False,
         # download pre/post regular market hours data
         # (optional, default is False)
         prepost=False,
@@ -3933,3 +4045,21 @@ def yf_print_symbol_data(symbols):
             print("")
 
     return symbols_stock, symbols_etf, symbols_cryto
+
+def chunked_list(a_list, chunk_size):
+    """Split python a_list into chunks_size lists.
+    e.g. a_list = [1, 2, 3, 4, 5, 6, 7], chunk_size = 2
+    return chunked_list = [[1,2], [3,4], [5,6], [7]]
+
+    Args:
+        a_list(list): a list, e.g. ['AAPL', 'GOOGL', ...]
+        chuck_size[int]: number of elements in the sub-list
+
+    Return:
+        chunked_list(list): list of sub-lists, where len(sub-list) == chuck_size
+    """
+    # Split a Python List into Chunks using For Loops
+    chunked_list = []
+    for i in range(0, len(a_list), chunk_size):
+        chunked_list.append(a_list[i:i+chunk_size])
+    return chunked_list
