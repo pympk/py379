@@ -1,5 +1,6 @@
-import numpy as np
-UIMW15 = np.apply_along_axis(UIMW15, 0, drawdown)
-UIMW30 = np.apply_along_axis(UIMW30, 0, drawdown)
-print(f'UIMW15.shape : {UIMW15.shape}')
-print(f'UIMW30.shape : {UIMW30.shape}')
+df_merged = df.merge(dfw, how='left', on='Date')
+df_merged = df_merged.sort_values(by=['Date', 'Time'])
+df_merged.reset_index(drop=True, inplace=True)  # drop current index
+pickle_dump(df_merged, path_pickle_dump, 'df_grSale_weather')
+df_merged = pickle_load(path_pickle_dump, 'df_grSale_weather')
+df_merged
