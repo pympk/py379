@@ -755,7 +755,7 @@ def list_dump(list_to_dump, path_list_dump, filename, verbose=False):
     Args:
         list_to_dump(str): list to write to file
         path_list_dump(str): path to write to file
-        filename(str): text file name, e.g. symbols.txt
+        filename(str): text file name, e.g. symbols.txt, symbols.csv
 
     Return:
         None
