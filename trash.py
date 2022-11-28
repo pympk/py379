@@ -1,33 +1,39 @@
-df_dow = df[['DOW', 'Item', 'Date', 'Qty', 'Gross Sales']]
-df_dow
-df_dow_g = df_dow.groupby(['DOW', 'Item']).agg({'Date':['nunique'], 'Qty':['sum'], 'Gross Sales':['sum']})
-df_15 =df_dow_g.loc[0:5]
-# df_15
-df_15.columns = df_15.columns.droplevel(1)  # drop sum in column index
-# df_15.index = df_15.index.droplevel(0)  # drop DOW in row index
-df_15 = df_15.groupby(['Item']).agg({'Date':['sum'], 'Qty':['sum'], 'Gross Sales':['sum']})
-df_15.columns = df_15.columns.droplevel(1)  # drop sum in column index
-df_15['Avg_Sales_per_day'] = df_15['Gross Sales'] / df_15['Date'] 
-df_15['Avg_Qty_per_day'] = df_15['Qty'] / df_15['Date'] 
-df_15 = df_15.sort_values(by=['Gross Sales'], ascending=False)
-df_15 = df_15.head(15)
-df_15
+perf_ranks_dict = {}  # dic of performance ranks
+syms_perf_rank = []  # list of lists to store top 100 ranked symbols
+days_lookbacks = [-15, -30, -60, -120, -240]
+for days_lookback in days_lookbacks:
+  f_name = 'period' + str(days_lookback)
 
-_xlabel = ''
-_ylabel = f'Sunday Avg. Qty.'
-_title = f'Sunday Average Item Quantity.' + date_str
+  _df_c = df_c[days_lookback::]
+  symbols, period_yr, drawdown, UI, max_drawdown, returns_std, Std_UI, CAGR, CAGR_Std, CAGR_UI = \
+      symb_perf_stats_vectorized(_df_c)
+  caches_perf_stats_vect = []
+  for symbol in symbols:
+      date_first = drawdown.index[0].strftime('%Y-%m-%d')
+      date_last = drawdown.index[-1].strftime('%Y-%m-%d')
+      cache = (symbol, date_first, date_last, period_yr, CAGR[symbol],
+              UI[symbol], Std_UI[symbol], CAGR_Std[symbol], CAGR_UI[symbol])
+      # append performance data (tuple) to caches_perf_stats (list)
+      caches_perf_stats_vect.append(cache)
+  column_names = ['symbol', 'first date', 'last date', 'Year', 'CAGR',
+                  'UI', 'Std/UI', 'CAGR/Std', 'CAGR/UI']
 
-# data
-x = df_15.index
-y = df_15['Avg_Qty_per_day']
+  # write symbols' performance stats to dataframe
+  df_ps = pd.DataFrame(caches_perf_stats_vect, columns=column_names)
+  df_ps['r_CAGR/UI'] = df_ps['CAGR/UI'].rank(ascending=False)
+  df_ps['r_CAGR/Std'] = df_ps['CAGR/Std'].rank(ascending=False)
+  df_ps['r_Std/UI'] = df_ps['Std/UI'].rank(ascending=False)
+  
+  _dict = {}
+  cols_sort = ['r_CAGR/UI', 'r_CAGR/Std', 'r_Std/UI']
+  # print(f'{f_name} top 100 symbols')  
+  for col in cols_sort:
+    symbols_top_100 = df_ps.sort_values(by=[col]).head(100).symbol.values
+    syms_perf_rank.append(list(symbols_top_100))
+    # print(f'{col}: {symbols_top_100}')
+    _dict[col] = symbols_top_100
+    perf_ranks_dict[f'{f_name}'] = _dict
+  # print(' ')
 
-# plot
-fig, ax = plt.subplots()
-ax.bar(x, y, width=1, edgecolor="white", linewidth=0.7)
-plt.xlabel(_xlabel)
-plt.ylabel(_ylabel)
-plt.title(_title, fontsize = _fontsize*_titlescale)
-plt.xticks(rotation = 85)
-plt.rcParams["figure.figsize"] = (12, 4)
-plt.grid(True)
-plt.show()
+pickle_dump(perf_ranks_dict, path_data_dump, f_pickled_perf_ranks_dict)
+print(f'perf_ranks_dict:\n{perf_ranks_dict}\n')
