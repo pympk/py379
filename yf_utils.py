@@ -1,4 +1,4 @@
-def split_train_val_test(
+def _2_split_train_val_test(
     df, s_train=0.7, s_val=0.2, s_test=0.1, verbose=False
 ):
     """Split df into training (df_train), validation (df_val)
@@ -44,7 +44,7 @@ def split_train_val_test(
     return df_train, df_val, df_test
 
 
-def random_slices(len_df, n_samples, days_lookback, days_eval, verbose=False):
+def _3_random_slices(len_df, n_samples, days_lookback, days_eval, verbose=False):
     """Returns a list of random tuples of start_train, end_train, end_eval, where
         iloc[start_train:end_train] is used for training, and iloc[end_train:end_eval]
         is used for evaluation.  The length of the list is equal to n_samples.
