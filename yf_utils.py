@@ -2,13 +2,13 @@ def _2_split_train_val_test(
     df, s_train=0.7, s_val=0.2, s_test=0.1, verbose=False
 ):
     """Split df into training (df_train), validation (df_val)
-    and test (df_test) and returns the splitted dfs
+        and test (df_test) and returns the splitted dfs
 
     Args:
         df(dataframe): dataframe to be splitted
-        s_train(float): ratio of df_train / df
-        s_val(float): ratio of df_val / df
-        s_test(float): ratio of df_test / df
+        s_train(float): ratio of df_train / df, default = 0.7
+        s_val(float): ratio of df_val / df, default = 0.2
+        s_test(float): ratio of df_test / df, default = 0.1
 
     Return:
         df_train(dataframe): training portion of df
