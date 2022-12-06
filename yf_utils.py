@@ -104,7 +104,7 @@ def _4_perf_ranks(df_close, days_lookbacks, n_symbols=100, verbose=False):
         df_close(dataframe): dataframe of symbols' close with
          DatetimeIndex e.g. (['2016-12-19', ... '2016-12-22']), symbols as
          column names, and symbols' close as column values.
-        days_lookbacks(list of negative integers): list of number of days to lookback,
+        days_lookbacks(list of negative integers): list of number of days to look-back,
          e.g. [-15, -30]
         n_sysmbols(int): number of symbols to be returned, default=100
 
