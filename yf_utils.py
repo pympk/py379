@@ -95,7 +95,7 @@ def _3_random_slices(
     return r_slices
 
 
-def _4_perf_ranks(df_close, days_lookbacks, n_symbols=100, verbose=False):
+def _4_perf_ranks(df_close, days_lookbacks, n_symbols=500, verbose=False):
     """Returns perf_ranks_dict(dic. of dic. of symbols ranked in descending performance)
      and ranked_perf_ranks_dict(dic. of symbols ranked in descending frequency in a combined
      pool of symbols in perf_ranks_dict).
@@ -106,7 +106,7 @@ def _4_perf_ranks(df_close, days_lookbacks, n_symbols=100, verbose=False):
          column names, and symbols' close as column values.
         days_lookbacks(list of negative integers): list of number of days to look-back,
          e.g. [-15, -30]
-        n_sysmbols(int): number of symbols to be returned, default=100
+        n_sysmbols(int): number of symbols to be returned, default=500
 
     Return:
         perf_ranks_dict({dic): dic. of dic. of symbols ranked in descending performance.
