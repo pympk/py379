@@ -2358,7 +2358,7 @@ def append_df_2(row_data, columns_drop_duplicate,
     return df
 
 
-def symb_perf_stats_vectorized_old(df_symbols_close):
+def symb_perf_stats_vectorized(df_symbols_close):
     """Takes dataframe of symbols' close and returns symbols, period_yr,
        drawdown, UI, max_drawdown, returns_std, Std_UI, CAGR, CAGR_Std, CAGR_UI
        https://stackoverflow.com/questions/36750571/calculate-max-draw-down-with-a-vectorized-solution-in-python
@@ -2408,7 +2408,7 @@ def symb_perf_stats_vectorized_old(df_symbols_close):
         returns_std, Std_UI, CAGR, CAGR_Std, CAGR_UI
 
 
-def symb_perf_stats_vectorized(df_symbols_close):
+def symb_perf_stats_vectorized_v1(df_symbols_close):
     """Takes dataframe of symbols' close and returns symbols, period_yr,
        drawdown, UI, max_drawdown, returns_std, Std_UI, CAGR, CAGR_Std, CAGR_UI
        https://stackoverflow.com/questions/36750571/calculate-max-draw-down-with-a-vectorized-solution-in-python
