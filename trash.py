@@ -1,148 +1,63 @@
-
-def _4_perf_ranks1(df_close, days_lookbacks, verbose=False):
-    """Returns perf_ranks_dict(dic. of dic. of symbols ranked in descending
-     performance) and ranked_perf_ranks_dict(dic. of symbols ranked in
-     descending frequency in a combined pool of symbols in perf_ranks_dict).
+def symb_perf_stats_vectorized_v2(df_symbols_close):
+    """Takes dataframe of symbols' close and returns symbols, period_yr,
+       drawdown, UI, max_drawdown, returns_std, Std_UI, CAGR, CAGR_Std, CAGR_UI
+       https://stackoverflow.com/questions/36750571/calculate-max-draw-down-with-a-vectorized-solution-in-python
+       http://www.tangotools.com/ui/ui.htm
+       Calculation CHECKED against: http://www.tangotools.com/ui/UlcerIndex.xls
+       Calculation VERIFIED in: symb_perf_stats_vectorized.ipynb
 
     Args:
-        df_close(dataframe): dataframe of symbols' close with
-         DatetimeIndex e.g. (['2016-12-19', ... '2016-12-22']), symbols as
-         column names, and symbols' close as column values.
-        days_lookbacks(list of negative integers): list of number of days to
-        look-back, e.g. [-15, -30], for performance calculation.
+        df_symbols_close(dataframe): dataframe with date as index,
+          symbol's close in columns, and symbols as column names.
 
     Return:
-        perf_ranks_dict({dic): dic. of dic. of symbols ranked in descending
-         performance.
-         First dic keys are:
-          'period' + str(days_lookbacks[0]), ... ,
-          'period' + str(days_lookbacks[-1])
-         Second dic keys are:
-          'r_CAGR/UI', 'r_CAGR/Std' and 'r_Std/UI'
-         e.g.:
-          {
-            period-15': {
-                         'r_CAGR/UI':  ['HZNP', ... , 'CB'],
-                         'r_CAGR/Std': ['BBW', ... , 'CPRX'],
-                         'r_Std/UI':   ['ENR', ... , 'HSY']
-                        },
-            ... ,
-            'period-60': {
-                          'r_CAGR/UI':  ['WNC', ... , 'FSLR'],
-                          'r_CAGR/Std': ['VCYT', ... , 'BERY'],
-                          'r_Std/UI':   ['MYOV', ... , 'NSC']
-                         }
-          }
-        ranked_perf_ranks_dict(dic): dic. of symbols ranked in descending
-         frequency in a combined pool of symbols in perf_ranks_dict.  Key is
-         'ranked_perf_ranks_period' + str(days_lookbacks), e.g.:
-         {'ranked_perf_ranks_period[-15, -30]': ['HZNP', ... , 'NSC']}
+        symbols(pandas.core.indexes.base.Index): stock symbols
+        period_yr(float): years, (days in dataframe) / 252
+        drawdown(pandas dataframe): drawdown from peak, 0.05 means 5% drawdown,
+            with date index and symbols as column names
+        UI(pandas.series float64): ulcer-index
+        max_drawdown(pandas series float64): maximum drawdown from peak
+        returns_std(pandas series float64): standard deviation of daily returns
+        Std_UI(pandas series float64): returns_std / UI
+        CAGR(pandas series float64): compounded annual growth rate
+        CAGR_Std(pandas series float64): CAGR / returns_std
+        CAGR_UI(pandas series float64): CAGR / UI
     """
+    # v1 convert drawdown from pandas series to numpy array
+    # v2 do calculation in numpy array
 
-    # from myUtils import pickle_load, pickle_dump, symb_perf_stats_vectorized
+    import numpy as np
     import pandas as pd
-    from myUtils import symb_perf_stats_vectorized
 
-    perf_ranks_dict = {}  # dic of performance ranks
-    syms_perf_rank = []  # list of lists to store top 100 ranked symbols
+    dates = df_symbols_close.index
+    symbols = df_symbols_close.columns
+    len_df = len(df_symbols_close)
 
-    # days_lookbacks = [-15, -30, -60, -120, -240]
-    # days_lookbacks = [-15, -30]
+    arr = df_symbols_close.to_numpy()
+    arr_returns = arr / np.roll(arr, 1, axis=0) - 1
+    arr_returns_std = np.std(arr_returns[1:, :], axis=0, ddof=1)  # drop first row 
+    arr_returns[0] = 0  # set first row to 0 
+    arr_cum_returns = (1 + arr_returns).cumprod(axis=0)  # cumulative product of column elements
+    # accumulative max value of column elements 
+    arr_drawdown = arr_cum_returns / np.maximum.accumulate(arr_cum_returns, axis=0) -1
+    arr_max_drawdown = arr_drawdown.min(axis=0)    
+    arr_UI = np.sqrt(np.sum(np.square(arr_drawdown), axis=0) / len_df)
+    arr_Std_UI = arr_returns_std / arr_UI
+    Std_UI = pd.Series(arr_Std_UI, index=symbols)
+    period_yr = len_df / 252  # 252 trading days per year
+    arr_CAGR = (arr[-1] / arr[0]) ** (1 / period_yr) - 1
+    arr_CAGR_Std = arr_CAGR / arr_returns_std
+    arr_CAGR_UI = arr_CAGR / arr_UI
 
-    for days_lookback in days_lookbacks:
-        f_name = "period" + str(days_lookback)
-        _df_c = df_close[days_lookback::]
-        (
-            symbols,
-            period_yr,
-            drawdown,
-            UI,
-            max_drawdown,
-            returns_std,
-            Std_UI,
-            CAGR,
-            CAGR_Std,
-            CAGR_UI,
-        ) = symb_perf_stats_vectorized(_df_c)
-        caches_perf_stats_vect = []
-        for symbol in symbols:
-            date_first = drawdown.index[0].strftime("%Y-%m-%d")
-            date_last = drawdown.index[-1].strftime("%Y-%m-%d")
-            cache = (
-                symbol,
-                date_first,
-                date_last,
-                period_yr,
-                CAGR[symbol],
-                UI[symbol],
-                Std_UI[symbol],
-                CAGR_Std[symbol],
-                CAGR_UI[symbol],
-            )
-            # append performance data (tuple) to caches_perf_stats (list)
-            caches_perf_stats_vect.append(cache)
-        column_names = [
-            "symbol",
-            "first date",
-            "last date",
-            "Year",
-            "CAGR",
-            "UI",
-            "Std/UI",
-            "CAGR/Std",
-            "CAGR/UI",
-        ]
+    # convert numpy array to dataframe, add date index and symbols as column names
+    drawdown = pd.DataFrame(arr_drawdown, index=dates, columns=symbols)
+    # convert numpy array to pandas series, add symbols as index    
+    UI = pd.Series(arr_UI, index=symbols)
+    max_drawdown = pd.Series(arr_max_drawdown, index=symbols)
+    returns_std = pd.Series(arr_returns_std, index=symbols)
+    CAGR = pd.Series(arr_CAGR, index=symbols)
+    CAGR_Std = pd.Series(arr_CAGR_Std, index=symbols)
+    CAGR_UI = pd.Series(arr_CAGR_UI, index=symbols)
 
-        # write symbols' performance stats to dataframe
-        df_ps = pd.DataFrame(caches_perf_stats_vect, columns=column_names)
-        df_ps["r_CAGR/UI"] = df_ps["CAGR/UI"].rank(ascending=False)
-        df_ps["r_CAGR/Std"] = df_ps["CAGR/Std"].rank(ascending=False)
-        df_ps["r_Std/UI"] = df_ps["Std/UI"].rank(ascending=False)
-
-        _dict = {}
-        cols_sort = ["r_CAGR/UI", "r_CAGR/Std", "r_Std/UI"]
-
-        # print(f'{f_name} top 100 symbols')
-        for col in cols_sort:
-            symbols_top_n = (
-
-                # df_ps.sort_values(by=[col]).head(n_symbols).symbol.values
-                df_ps.sort_values(by=[col]).symbol.values
-
-            )
-            syms_perf_rank.append(list(symbols_top_n))
-            # print(f'{col}: {symbols_top_n}')
-            _dict[col] = symbols_top_n
-            perf_ranks_dict[f"{f_name}"] = _dict
-        # print(' ')
-
-    # pickle_dump(perf_ranks_dict, path_data_dump, f_pickled_perf_ranks_dict)
-    # print(f'perf_ranks_dict:\n{perf_ranks_dict}\n')
-
-    syms_perf_rank  # list of lists of top 100 rank
-    l_syms_perf_rank = [
-        val for sublist in syms_perf_rank for val in sublist
-    ]  # flatten list of lists
-
-    from collections import Counter
-
-    cnt_symbol_freq = Counter(l_syms_perf_rank)  # count symbols and frequency
-    # print(cnt_symbol_freq)
-    l_tuples = (
-        cnt_symbol_freq.most_common()
-    )  # convert to e.g [('AKRO', 6), ('IMVT', 4), ... ('ADEA', 3)]
-    symbols_ranked_perf_ranks = [
-        symbol for symbol, count in l_tuples
-    ]  # select just the symbols without the frequency counts
-
-    ranked_perf_ranks_dict = {}
-    f_name = f"ranked_perf_ranks_period" + str(
-        days_lookbacks
-    )  # key name, ranked_perf_ranks_dict
-    ranked_perf_ranks_dict[
-        f"{f_name}"
-    # values: list of most common symbols in all performance ranks in
-    #  descending order
-    ] = symbols_ranked_perf_ranks
-
-    return perf_ranks_dict, ranked_perf_ranks_dict
+    return symbols, period_yr, drawdown, UI, max_drawdown, \
+        returns_std, Std_UI, CAGR, CAGR_Std, CAGR_UI
