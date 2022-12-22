@@ -2,7 +2,7 @@ def _2_split_train_val_test(
     df, s_train=0.7, s_val=0.2, s_test=0.1, verbose=False
 ):
     """Split df into training (df_train), validation (df_val)
-        and test (df_test) and returns the splitted dfs
+    and test (df_test) and returns the splitted dfs
 
     Args:
         df(dataframe): dataframe to be splitted
@@ -48,9 +48,9 @@ def _3_random_slices(
     len_df, n_samples, days_lookback, days_eval, verbose=False
 ):
     """Returns a list of random tuples of start_train, end_train, end_eval, where
-        iloc[start_train:end_train] is used for training, and iloc[end_train:end_eval]
-        is used for evaluation.  The length of the list is equal to n_samples.
-        i.e. [(248, 368, 388), (199, 319, 339), ... (45, 165, 185)]
+    iloc[start_train:end_train] is used for training, and iloc[end_train:end_eval]
+    is used for evaluation.  The length of the list is equal to n_samples.
+    i.e. [(248, 368, 388), (199, 319, 339), ... (45, 165, 185)]
 
     Args:
         len_df(int): length of dataframe
@@ -137,7 +137,11 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
 
     # from myUtils import pickle_load, pickle_dump, symb_perf_stats_vectorized
     import pandas as pd
+
+
     from myUtils import symb_perf_stats_vectorized
+    from myUtils import symb_perf_stats_vectorized_v2
+
 
     perf_ranks_dict = {}  # dic of performance ranks
     syms_perf_rank = []  # list of lists to store top 100 ranked symbols
@@ -159,7 +163,12 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
             CAGR,
             CAGR_Std,
             CAGR_UI,
-        ) = symb_perf_stats_vectorized(_df_c)
+
+
+        ) = symb_perf_stats_vectorized(_df_c)            
+        # ) = symb_perf_stats_vectorized_v2(_df_c)            
+
+
         caches_perf_stats_vect = []
         for symbol in symbols:
             date_first = drawdown.index[0].strftime("%Y-%m-%d")
