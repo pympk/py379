@@ -104,7 +104,7 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
         df_close(dataframe): dataframe of symbols' close with
          DatetimeIndex e.g. (['2016-12-19', ... '2016-12-22']), symbols as
          column names, and symbols' close as column values.
-        days_lookbacks(list of negative integers): list of number of days to
+        days_lookbacks(list of NEGATIVE integers): list of number of days to
         look-back, e.g. [-15, -30], for performance calculation.
 
     Return:
@@ -137,17 +137,10 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
 
     # from myUtils import pickle_load, pickle_dump, symb_perf_stats_vectorized
     import pandas as pd
-
-
-    from myUtils import symb_perf_stats_vectorized
     from myUtils import symb_perf_stats_vectorized_v2
-
 
     perf_ranks_dict = {}  # dic of performance ranks
     syms_perf_rank = []  # list of lists to store top 100 ranked symbols
-
-    # days_lookbacks = [-15, -30, -60, -120, -240]
-    # days_lookbacks = [-15, -30]
 
     for days_lookback in days_lookbacks:
         f_name = "period" + str(days_lookback)
@@ -162,11 +155,8 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
             Std_UI,
             CAGR,
             CAGR_Std,
-            CAGR_UI,
-
-
-        ) = symb_perf_stats_vectorized(_df_c)            
-        # ) = symb_perf_stats_vectorized_v2(_df_c)            
+            CAGR_UI,        
+        ) = symb_perf_stats_vectorized_v2(_df_c)            
 
 
         caches_perf_stats_vect = []
