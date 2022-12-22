@@ -104,8 +104,8 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
         df_close(dataframe): dataframe of symbols' close with
          DatetimeIndex e.g. (['2016-12-19', ... '2016-12-22']), symbols as
          column names, and symbols' close as column values.
-        days_lookbacks(list of NEGATIVE integers): list of number of days to
-        look-back, e.g. [-15, -30], for performance calculation.
+        days_lookbacks(list of positive integers): list of number of days to
+        look-back, e.g. [15, 30], for performance calculation.
 
     Return:
         perf_ranks_dict({dic): dic. of dic. of symbols ranked in descending
@@ -143,8 +143,23 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
     syms_perf_rank = []  # list of lists to store top 100 ranked symbols
 
     for days_lookback in days_lookbacks:
+
+
+
+        days_lookback = -1 * days_lookback
+
+
+
         f_name = "period" + str(days_lookback)
         _df_c = df_close[days_lookback::]
+
+
+
+        print(f'days_lookback: {days_lookback}')
+        print(f'_df_c: {_df_c}')
+
+
+
         (
             symbols,
             period_yr,
