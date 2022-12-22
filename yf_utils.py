@@ -114,19 +114,19 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
           'period' + str(days_lookbacks[0]), ... ,
           'period' + str(days_lookbacks[-1])
          Second dic keys are:
-          'r_CAGR/UI', 'r_CAGR/Std' and 'r_Std/UI'
+          'r_CAGR/UI', 'r_CAGR/retnStd' and 'r_retnStd/UI'
          e.g.:
           {
             period-15': {
                          'r_CAGR/UI':  ['HZNP', ... , 'CB'],
-                         'r_CAGR/Std': ['BBW', ... , 'CPRX'],
-                         'r_Std/UI':   ['ENR', ... , 'HSY']
+                         'r_CAGR/retnStd': ['BBW', ... , 'CPRX'],
+                         'r_retnStd/UI':   ['ENR', ... , 'HSY']
                         },
             ... ,
             'period-60': {
                           'r_CAGR/UI':  ['WNC', ... , 'FSLR'],
-                          'r_CAGR/Std': ['VCYT', ... , 'BERY'],
-                          'r_Std/UI':   ['MYOV', ... , 'NSC']
+                          'r_CAGR/retnStd': ['VCYT', ... , 'BERY'],
+                          'r_retnStd/UI':   ['MYOV', ... , 'NSC']
                          }
           }
         ranked_perf_ranks_dict(dic): dic. of symbols ranked in descending
@@ -135,7 +135,6 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
          {'ranked_perf_ranks_period[-15, -30]': ['HZNP', ... , 'NSC']}
     """
 
-    # from myUtils import pickle_load, pickle_dump, symb_perf_stats_vectorized
     import pandas as pd
     from myUtils import symb_perf_stats_vectorized_v2
 
@@ -143,34 +142,20 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
     syms_perf_rank = []  # list of lists to store top 100 ranked symbols
 
     for days_lookback in days_lookbacks:
-
-
-
         days_lookback = -1 * days_lookback
-
-
-
         f_name = "period" + str(days_lookback)
         _df_c = df_close[days_lookback::]
-
-
-
-        print(f'days_lookback: {days_lookback}')
-        print(f'_df_c: {_df_c}')
-
-
-
         (
             symbols,
             period_yr,
             drawdown,
             UI,
             max_drawdown,
-            returns_std,
-            Std_UI,
+            retnStd,
+            retnStd_d_UI,
             CAGR,
-            CAGR_Std,
-            CAGR_UI,        
+            CAGR_d_retnStd,
+            CAGR_d_UI,        
         ) = symb_perf_stats_vectorized_v2(_df_c)            
 
 
@@ -185,9 +170,9 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
                 period_yr,
                 CAGR[symbol],
                 UI[symbol],
-                Std_UI[symbol],
-                CAGR_Std[symbol],
-                CAGR_UI[symbol],
+                retnStd_d_UI[symbol],
+                CAGR_d_retnStd[symbol],
+                CAGR_d_UI[symbol],
             )
             # append performance data (tuple) to caches_perf_stats (list)
             caches_perf_stats_vect.append(cache)
@@ -198,19 +183,19 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
             "Year",
             "CAGR",
             "UI",
-            "Std/UI",
-            "CAGR/Std",
+            "retnStd/UI",
+            "CAGR/retnStd",
             "CAGR/UI",
         ]
 
         # write symbols' performance stats to dataframe
         df_ps = pd.DataFrame(caches_perf_stats_vect, columns=column_names)
         df_ps["r_CAGR/UI"] = df_ps["CAGR/UI"].rank(ascending=False)
-        df_ps["r_CAGR/Std"] = df_ps["CAGR/Std"].rank(ascending=False)
-        df_ps["r_Std/UI"] = df_ps["Std/UI"].rank(ascending=False)
+        df_ps["r_CAGR/retnStd"] = df_ps["CAGR/retnStd"].rank(ascending=False)
+        df_ps["r_retnStd/UI"] = df_ps["retnStd/UI"].rank(ascending=False)
 
         _dict = {}
-        cols_sort = ["r_CAGR/UI", "r_CAGR/Std", "r_Std/UI"]
+        cols_sort = ["r_CAGR/UI", "r_CAGR/retnStd", "r_retnStd/UI"]
 
         # print(f'{f_name} top 100 symbols')
         for col in cols_sort:
@@ -224,10 +209,6 @@ def _4_perf_ranks(df_close, days_lookbacks, verbose=False):
             # print(f'{col}: {symbols_top_n}')
             _dict[col] = symbols_top_n
             perf_ranks_dict[f"{f_name}"] = _dict
-        # print(' ')
-
-    # pickle_dump(perf_ranks_dict, path_data_dump, f_pickled_perf_ranks_dict)
-    # print(f'perf_ranks_dict:\n{perf_ranks_dict}\n')
 
     syms_perf_rank  # list of lists of top 100 rank
     l_syms_perf_rank = [
