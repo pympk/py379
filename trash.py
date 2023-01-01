@@ -1,34 +1,38 @@
-# grp_perf_ranks = {}
-grp_most_common_syms = []
-# loop thru lists of tuples of start_train:end_train:end_eval, i.e.
-#  [[(887, 917, 927), (857, 917, 927), (797, 917, 927)],
-#  [(483, 513, 523), (453, 513, 523), (393, 513, 523)]]
-for lb_slices in all_lb_slices:  
-  for lb_slice in lb_slices:  # lb_slice, e.g. (246, 276, 286)
-    start_train = lb_slice[0]
-    end_train = lb_slice[1]
-    start_eval = end_train
-    end_eval = lb_slice[2]
-    lookback = end_train - start_train
-    eval = end_eval - start_eval
-    print(f'lb_slices:     {lb_slices}')
-    print(f'lb_slice:      {lb_slice}')
-    print(f'days lookback: {lookback}')
-    print(f'days eval:     {eval}')    
-    print(f'start_train:   {start_train}')
-    print(f'end_train:     {end_train}')
-    # print(f'start_eval:    {start_eval}')
-    # print(f'end_eval:      {end_eval}')
+def _5_lookback_slices(max_slices, days_lookbacks, verbose=False):
+    """
+    Create sets of sub-slices from max_slices and days_lookbacks. A slice is
+    a tuple of iloc values for start_train:end_train=start_eval:end_eval.
+    Given 2 max_slices of [(104, 224, 234), (626, 746, 756)], it returns 2 sets
+    [[(194, 224, 234), (164, 224, 234), (104, 224, 234)],
+    [(716, 746, 756), (686, 746, 756), (626, 746, 756)]]. End_train is constant
+    for each set. End_train-start_train is the same value from max_slice.
 
-    _df = df_train.iloc[start_train:end_train]
-    perf_ranks, most_common_syms = _4_perf_ranks(_df, n_top_syms=10)
-    # 1 lookback of r_CAGR/UI, r_CAGR/retnStd, r_retnStd/UI
-    print(f'perf_ranks: {perf_ranks}')  
-    # most common symbols of perf_ranks 
-    print(f'most_common_syms: {most_common_syms}')     
-    # grp_perf_ranks[lookback] = perf_ranks
-    print(f'+++ finish lookback {lookback} +++')
-    grp_most_common_syms.append(most_common_syms)
-    
-  print(f'grp_most_common_syms: {grp_most_common_syms}')
-  print(f'===== finish lookback slice {lb_slice} ====='\n)
+    Args:
+        max_slices(list of tuples): list of iloc values for
+        start_train:end_train=start_eval:end_eval, where end_train-start_train
+        is the max value in days_lookbacks
+        days_lookback(int):  number of days to lookback for training
+
+    Return:
+        lb_slices(list of lists of tuples): each sublist is set of iloc for
+        start_train:end_train:end_eval tuples, where the days_lookbacks are
+        the values of end_train-start_train in the set, and end_train-end_eval
+        are same values from max_slices. The number of sublist is equal to
+        number of max_slices. The number of tuples in the sublists is equal to
+        number
+    """
+
+    lb_slices = []
+    days_lookbacks.sort()  # sort list of integers in ascending order
+    for max_slice in max_slices:
+        l_max_slice = []
+        for days in days_lookbacks:
+            new_slice = (max_slice[1] - days, max_slice[1], max_slice[2])
+            l_max_slice.append(new_slice)
+            if verbose:
+                print(f"days: {days}, {new_slice}")
+        lb_slices.append(l_max_slice)
+        if verbose:
+            print("")
+
+    return lb_slices

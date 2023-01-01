@@ -19,11 +19,12 @@ def _2_split_train_val_test(
     if (s_train + s_val + s_test) - 1 > 0.0001:  # allow 0.01% error
         _sum = s_train + s_val + s_test
         raise Exception(
-            f"s_train({s_train}) + s_val({s_val}) + s_test({s_test}) must sums to 1"
+            f"s_train({s_train}) + s_val({s_val}) + s_test({s_test}) = \
+                s_sum({_sum}), It must sums to 1"
         )
     n_train = round(len(df) * s_train)
     n_val = round(len(df) * s_val)
-    n_test = round(len(df) * s_test)
+    # n_test = round(len(df) * s_test)
     df_train = df.iloc[0:n_train]
     df_val = df.iloc[n_train : (n_train + n_val)]
     df_test = df.iloc[(n_train + n_val) : :]
@@ -48,8 +49,9 @@ def _3_random_slices(
     len_df, n_samples, days_lookback, days_eval, verbose=False
 ):
     """Returns a list of random tuples of start_train, end_train, end_eval, where
-    iloc[start_train:end_train] is used for training, and iloc[end_train:end_eval]
-    is used for evaluation.  The length of the list is equal to n_samples.
+    iloc[start_train:end_train] is used for training,
+    and iloc[end_train:end_eval] is used for evaluation.  The length of the
+    list is equal to n_samples.
     i.e. [(248, 368, 388), (199, 319, 339), ... (45, 165, 185)]
 
     Args:
@@ -59,13 +61,13 @@ def _3_random_slices(
         days_eval(int): number of days forward for evaluation
 
     Return:
-        r_slices(list of tuples): list of random tuples of start_train, end_train, end_eval, where
-          iloc[start_train:end_train] is used for training, and iloc[end_train:end_eval] is used for
-          evaluation.
+        r_slices(list of tuples): list of random tuples of start_train,
+        end_train, end_eval, where iloc[start_train:end_train] is used for
+        training, and iloc[end_train:end_eval] is used for evaluation.
           i.e. [(248, 368, 388), (199, 319, 339), ... (45, 165, 185)]
     """
 
-    import random
+    # import random
     from random import randint
 
     # random.seed(0)
@@ -73,14 +75,17 @@ def _3_random_slices(
     days_total = days_lookback + days_eval
     if verbose:
         print(
-            f"days_lookback: {days_lookback}, days_eval: {days_eval}, days_total: {days_total}, len_df: {len_df}"
+            f"days_lookback: {days_lookback}, days_eval: {days_eval}, \
+                days_total: {days_total}, len_df: {len_df}"
         )
 
     if days_total > len_df:
-        msg_err = f"days_total: {days_total} must be less or equal to len_df: {len_df}"
+        msg_err = f"days_total: {days_total} must be less or equal to \
+            len_df: {len_df}"
         raise SystemExit(msg_err)
 
-    # random slices of iloc for train and eval that fits the days_lookback, days_eval and total len_df constraints
+    # random slices of iloc for train and eval that fits the days_lookback,
+    #  days_eval and total len_df constraints
     r_slices = []
     while n_sample < n_samples:
         n_rand = randint(0, len_df)
@@ -155,9 +160,8 @@ def _4_perf_ranks_old(df_close, days_lookbacks, verbose=False):
             retnStd_d_UI,
             CAGR,
             CAGR_d_retnStd,
-            CAGR_d_UI,        
-        ) = symb_perf_stats_vectorized_v2(_df_c)            
-
+            CAGR_d_UI,
+        ) = symb_perf_stats_vectorized_v2(_df_c)
 
         caches_perf_stats_vect = []
         for symbol in symbols:
@@ -200,10 +204,8 @@ def _4_perf_ranks_old(df_close, days_lookbacks, verbose=False):
         # print(f'{f_name} top 100 symbols')
         for col in cols_sort:
             symbols_top_n = (
-
                 # df_ps.sort_values(by=[col]).head(n_symbols).symbol.values
                 df_ps.sort_values(by=[col]).symbol.values
-
             )
             syms_perf_rank.append(list(symbols_top_n))
             # print(f'{col}: {symbols_top_n}')
@@ -232,8 +234,8 @@ def _4_perf_ranks_old(df_close, days_lookbacks, verbose=False):
     )  # key name, ranked_perf_ranks_dict
     ranked_perf_ranks_dict[
         f"{f_name}"
-    # values: list of most common symbols in all performance ranks in
-    #  descending order
+        # values: list of most common symbols in all performance ranks in
+        #  descending order
     ] = symbols_ranked_perf_ranks
 
     return perf_ranks_dict, ranked_perf_ranks_dict
@@ -371,3 +373,43 @@ def _4_perf_ranks(df_close, n_top_syms=200, verbose=False):
     )  # convert to e.g [('AKRO', 6), ('IMVT', 4), ... ('ADEA', 3)]
 
     return perf_ranks, most_common_syms
+
+
+def _5_lookback_slices(max_slices, days_lookbacks, verbose=False):
+    """
+    Create sets of sub-slices from max_slices and days_lookbacks. A slice is
+    a tuple of iloc values for start_train:end_train=start_eval:end_eval.
+    Given 2 max_slices of [(104, 224, 234), (626, 746, 756)], it returns 2 sets
+    [[(194, 224, 234), (164, 224, 234), (104, 224, 234)],
+    [(716, 746, 756), (686, 746, 756), (626, 746, 756)]]. End_train is constant
+    for each set. End_train-start_train is the same value from max_slice.
+
+    Args:
+        max_slices(list of tuples): list of iloc values for
+        start_train:end_train=start_eval:end_eval, where end_train-start_train
+        is the max value in days_lookbacks
+        days_lookback(int):  number of days to lookback for training
+
+    Return:
+        lb_slices(list of lists of tuples): each sublist is set of iloc for
+        start_train:end_train:end_eval tuples, where the days_lookbacks are
+        the values of end_train-start_train in the set, and end_train-end_eval
+        are same values from max_slices. The number of sublist is equal to
+        number of max_slices. The number of tuples in the sublists is equal to
+        number
+    """
+
+    lb_slices = []
+    days_lookbacks.sort()  # sort list of integers in ascending order
+    for max_slice in max_slices:
+        l_max_slice = []
+        for days in days_lookbacks:
+            new_slice = (max_slice[1] - days, max_slice[1], max_slice[2])
+            l_max_slice.append(new_slice)
+            if verbose:
+                print(f"days: {days}, {new_slice}")
+        lb_slices.append(l_max_slice)
+        if verbose:
+            print("")
+
+    return lb_slices
