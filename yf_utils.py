@@ -241,7 +241,7 @@ def _4_perf_ranks_old(df_close, days_lookbacks, verbose=False):
     return perf_ranks_dict, ranked_perf_ranks_dict
 
 
-def _4_perf_ranks(df_close, n_top_syms=200, verbose=False):
+def _4_perf_ranks(df_close, n_top_syms, verbose=False):
     """Returns perf_ranks(dic. of dic. of symbols ranked in descending
      performance) and most_common_syms(list of tuples of the most common
      symbols in perf_ranks in descending frequency).
