@@ -478,6 +478,7 @@ def _7_perf_eval(df_close):
         (CAGR/Ulcer_Index).mean / (CAGR/Ulcer_Index).std]
     """
 
+    import pandas as pd
     from myUtils import symb_perf_stats_vectorized_v2
 
     (
