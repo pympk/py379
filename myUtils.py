@@ -2488,6 +2488,8 @@ def symb_perf_stats_vectorized_v2(df_symbols_close):
         CAGR_div_Std(pandas series float64): CAGR / returns_std
         CAGR_div_UI(pandas series float64): CAGR / UI
     """
+    # https://stackoverflow.com/questions/44933518/how-to-remove-runtimewarning-errors-from-code
+    #  suppress RuntimeWarning divide by zero    
     # v1 convert drawdown from pandas series to numpy array
     # v2 do calculation in numpy array
 
