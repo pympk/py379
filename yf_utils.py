@@ -66,6 +66,7 @@ def _3_random_slices(
         training, and iloc[end_train:end_eval] is used for evaluation.
           i.e. [(248, 368, 388), (199, 319, 339), ... (45, 165, 185)]
     """
+    # v1 correct out-of-bound end_eval
 
     # import random
     from random import randint
@@ -79,7 +80,11 @@ def _3_random_slices(
                 days_total: {days_total}, len_df: {len_df}"
         )
 
-    if days_total > len_df:
+
+#########################################
+    # if days_total > len_df:
+    if days_total >= len_df:    
+#########################################
         msg_err = f"days_total: {days_total} must be less or equal to \
             len_df: {len_df}"
         raise SystemExit(msg_err)
@@ -93,7 +98,11 @@ def _3_random_slices(
         end_train = n_rand
         # start_eval = n_rand
         end_eval = n_rand + days_eval
-        if 0 <= start_train and end_eval <= len_df:
+#########################################        
+        # if 0 <= start_train and end_eval <= len_df:
+        # df_eval[len_df] will be out-of-bound, df_eval[0:len_df] is ok
+        if 0 <= start_train and end_eval < len_df:            
+#########################################            
             r_slices.append((start_train, end_train, end_eval))
             n_sample += 1
 
