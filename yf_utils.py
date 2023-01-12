@@ -333,7 +333,8 @@ def _5_perf_ranks(df_close, n_top_syms, verbose=False):
 
     import pandas as pd
     from collections import Counter
-    from myUtils import symb_perf_stats_vectorized_v2
+    # from myUtils import symb_perf_stats_vectorized_v2
+    from myUtils import symb_perf_stats_vectorized_v3  # v3 added ignore divide by zero err    
 
     # dic of  dic of performance ranks
     # e.g. {'period-120': {'r_CAGR/UI': array(['LRN', 'APPS', 'FTSM', 'AU',
