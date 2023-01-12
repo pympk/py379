@@ -2583,7 +2583,7 @@ def symb_perf_stats_vectorized_v3(df_symbols_close):
     import pandas as pd
 
     # ignore divide by zero in case arr_drawdown is zero
-    with numpy.errstate(divide='ignore'):
+    with np.errstate(divide='ignore'):
 
         dates = df_symbols_close.index
         symbols = df_symbols_close.columns

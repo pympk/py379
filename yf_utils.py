@@ -359,7 +359,7 @@ def _5_perf_ranks(df_close, n_top_syms, verbose=False):
         CAGR,
         CAGR_d_retnStd,
         CAGR_d_UI,
-    ) = symb_perf_stats_vectorized_v2(df_close)
+    ) = symb_perf_stats_vectorized_v3(df_close)
 
     caches_perf_stats = []  # list of tuples in cache
     for symbol in symbols:
