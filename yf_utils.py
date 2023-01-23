@@ -489,7 +489,8 @@ def _7_perf_eval(df_close):
     """
 
     import pandas as pd
-    from myUtils import symb_perf_stats_vectorized_v2
+    # from myUtils import symb_perf_stats_vectorized_v2
+    from myUtils import symb_perf_stats_vectorized_v3    
 
     (
         symbols,
@@ -502,7 +503,7 @@ def _7_perf_eval(df_close):
         CAGR,
         CAGR_div_returns_std,
         CAGR_div_UI,
-    ) = symb_perf_stats_vectorized_v2(df_close)
+    ) = symb_perf_stats_vectorized_v3(df_close)
 
     caches_perf_stats_vect = []
     for symbol in symbols:
