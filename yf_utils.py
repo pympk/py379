@@ -190,7 +190,7 @@ def _5_perf_ranks_old(df_close, days_lookbacks, verbose=False):
     """
 
     import pandas as pd
-    from myUtils import symb_perf_stats_vectorized_v2
+    from myUtils import symb_perf_stats_vectorized_v3
 
     perf_ranks_dict = {}  # dic of performance ranks
     syms_perf_rank = []  # list of lists to store top 100 ranked symbols
@@ -210,7 +210,7 @@ def _5_perf_ranks_old(df_close, days_lookbacks, verbose=False):
             CAGR,
             CAGR_d_retnStd,
             CAGR_d_UI,
-        ) = symb_perf_stats_vectorized_v2(_df_c)
+        ) = symb_perf_stats_vectorized_v3(_df_c)
 
         caches_perf_stats_vect = []
         for symbol in symbols:
