@@ -190,7 +190,7 @@ def _5_perf_ranks_old(df_close, days_lookbacks, verbose=False):
     """
 
     import pandas as pd
-    from myUtils import symb_perf_stats_vectorized_v3
+    from myUtils import symb_perf_stats_vectorized_v4
 
     perf_ranks_dict = {}  # dic of performance ranks
     syms_perf_rank = []  # list of lists to store top 100 ranked symbols
@@ -210,7 +210,7 @@ def _5_perf_ranks_old(df_close, days_lookbacks, verbose=False):
             CAGR,
             CAGR_d_retnStd,
             CAGR_d_UI,
-        ) = symb_perf_stats_vectorized_v3(_df_c)
+        ) = symb_perf_stats_vectorized_v4(_df_c)
 
         caches_perf_stats_vect = []
         for symbol in symbols:
@@ -333,8 +333,7 @@ def _5_perf_ranks(df_close, n_top_syms, verbose=False):
 
     import pandas as pd
     from collections import Counter
-    # from myUtils import symb_perf_stats_vectorized_v2
-    from myUtils import symb_perf_stats_vectorized_v3  # v3 added ignore divide by zero err    
+    from myUtils import symb_perf_stats_vectorized_v4    
 
     # dic of  dic of performance ranks
     # e.g. {'period-120': {'r_CAGR/UI': array(['LRN', 'APPS', 'FTSM', 'AU',
@@ -359,7 +358,7 @@ def _5_perf_ranks(df_close, n_top_syms, verbose=False):
         CAGR,
         CAGR_d_retnStd,
         CAGR_d_UI,
-    ) = symb_perf_stats_vectorized_v3(df_close)
+    ) = symb_perf_stats_vectorized_v4(df_close)
 
     caches_perf_stats = []  # list of tuples in cache
     for symbol in symbols:
@@ -489,8 +488,7 @@ def _7_perf_eval(df_close):
     """
 
     import pandas as pd
-    # from myUtils import symb_perf_stats_vectorized_v2
-    from myUtils import symb_perf_stats_vectorized_v3    
+    from myUtils import symb_perf_stats_vectorized_v4    
 
     (
         symbols,
@@ -503,7 +501,7 @@ def _7_perf_eval(df_close):
         CAGR,
         CAGR_div_returns_std,
         CAGR_div_UI,
-    ) = symb_perf_stats_vectorized_v3(df_close)
+    ) = symb_perf_stats_vectorized_v4(df_close)
 
     caches_perf_stats_vect = []
     for symbol in symbols:
