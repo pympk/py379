@@ -190,7 +190,7 @@ def _5_perf_ranks_old(df_close, days_lookbacks, verbose=False):
     """
 
     import pandas as pd
-    from myUtils import symb_perf_stats_vectorized_v6
+    from myUtils import symb_perf_stats_vectorized_v7
 
     perf_ranks_dict = {}  # dic of performance ranks
     syms_perf_rank = []  # list of lists to store top 100 ranked symbols
@@ -212,8 +212,9 @@ def _5_perf_ranks_old(df_close, days_lookbacks, verbose=False):
             CAGR,
             CAGR_div_retnStd,
             CAGR_div_UI,
-            grp_SumCAGR,
-        ) = symb_perf_stats_vectorized_v6(_df_c)
+            grp_MeanCAGR,
+            grp_StdCAGR,
+        ) = symb_perf_stats_vectorized_v7(_df_c)
 
         caches_perf_stats_vect = []
         for symbol in symbols:
@@ -336,7 +337,7 @@ def _5_perf_ranks(df_close, n_top_syms, verbose=False):
 
     import pandas as pd
     from collections import Counter
-    from myUtils import symb_perf_stats_vectorized_v6    
+    from myUtils import symb_perf_stats_vectorized_v7    
 
     # dic of  dic of performance ranks
     # e.g. {'period-120': {'r_CAGR/UI': array(['LRN', 'APPS', 'FTSM', 'AU',
@@ -363,8 +364,9 @@ def _5_perf_ranks(df_close, n_top_syms, verbose=False):
         CAGR,
         CAGR_div_retnStd,
         CAGR_div_UI,
-        grp_SumCAGR,
-    ) = symb_perf_stats_vectorized_v6(df_close)
+        grp_MeanCAGR,
+        grp_StdCAGR,
+    ) = symb_perf_stats_vectorized_v7(df_close)
 
     caches_perf_stats = []  # list of tuples in cache
     for symbol in symbols:
@@ -475,7 +477,7 @@ def _7_perf_eval(df_close):
     The function first calculates symbols' drawdown, Ulcer-Index, max-drawdown, std(returns),
     std(returns)/Ulcer-Index, CAGR, CAGR/std(returns), CAGR/Ulcer-Index. Then it calculates and returns
     the group's (i.e. all the symbols) mean, standard-deviation, mean/standard-deviation for
-    'retrun_std/UI', 'CAGR/return_std', 'CAGR/UI'.
+    'return_std/UI', 'CAGR/return_std', 'CAGR/UI'.
 
     Args:
       df_close(dataframe): dataframe of symbols' close with
@@ -494,7 +496,7 @@ def _7_perf_eval(df_close):
     """
 
     import pandas as pd
-    from myUtils import symb_perf_stats_vectorized_v6    
+    from myUtils import symb_perf_stats_vectorized_v7    
 
     (
         symbols,
@@ -509,8 +511,9 @@ def _7_perf_eval(df_close):
         CAGR,
         CAGR_div_retnStd,
         CAGR_div_UI,
-        grp_SumCAGR,
-    ) = symb_perf_stats_vectorized_v6(df_close)
+        grp_MeanCAGR,
+        grp_StdCAGR,
+    ) = symb_perf_stats_vectorized_v7(df_close)
 
     caches_perf_stats_vect = []
     for symbol in symbols:
