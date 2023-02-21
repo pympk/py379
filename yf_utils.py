@@ -190,7 +190,7 @@ def _5_perf_ranks_old(df_close, days_lookbacks, verbose=False):
     """
 
     import pandas as pd
-    from myUtils import symb_perf_stats_vectorized_v4
+    from myUtils import symb_perf_stats_vectorized_v6
 
     perf_ranks_dict = {}  # dic of performance ranks
     syms_perf_rank = []  # list of lists to store top 100 ranked symbols
@@ -202,15 +202,18 @@ def _5_perf_ranks_old(df_close, days_lookbacks, verbose=False):
         (
             symbols,
             period_yr,
+            returns,
             drawdown,
             UI,
-            max_drawdown,
+            maxDrawdown,
+            retnMean,
             retnStd,
-            retnStd_d_UI,
+            retnStd_div_UI,
             CAGR,
-            CAGR_d_retnStd,
-            CAGR_d_UI,
-        ) = symb_perf_stats_vectorized_v4(_df_c)
+            CAGR_div_retnStd,
+            CAGR_div_UI,
+            grp_SumCAGR,
+        ) = symb_perf_stats_vectorized_v6(_df_c)
 
         caches_perf_stats_vect = []
         for symbol in symbols:
@@ -223,9 +226,9 @@ def _5_perf_ranks_old(df_close, days_lookbacks, verbose=False):
                 period_yr,
                 CAGR[symbol],
                 UI[symbol],
-                retnStd_d_UI[symbol],
-                CAGR_d_retnStd[symbol],
-                CAGR_d_UI[symbol],
+                retnStd_div_UI[symbol],
+                CAGR_div_retnStd[symbol],
+                CAGR_div_UI[symbol],
             )
             # append performance data (tuple) to caches_perf_stats (list)
             caches_perf_stats_vect.append(cache)
@@ -333,7 +336,7 @@ def _5_perf_ranks(df_close, n_top_syms, verbose=False):
 
     import pandas as pd
     from collections import Counter
-    from myUtils import symb_perf_stats_vectorized_v4    
+    from myUtils import symb_perf_stats_vectorized_v6    
 
     # dic of  dic of performance ranks
     # e.g. {'period-120': {'r_CAGR/UI': array(['LRN', 'APPS', 'FTSM', 'AU',
@@ -350,15 +353,18 @@ def _5_perf_ranks(df_close, n_top_syms, verbose=False):
     (
         symbols,
         period_yr,
+        returns,
         drawdown,
         UI,
-        max_drawdown,
+        maxDrawdown,
+        retnMean,
         retnStd,
-        retnStd_d_UI,
+        retnStd_div_UI,
         CAGR,
-        CAGR_d_retnStd,
-        CAGR_d_UI,
-    ) = symb_perf_stats_vectorized_v4(df_close)
+        CAGR_div_retnStd,
+        CAGR_div_UI,
+        grp_SumCAGR,
+    ) = symb_perf_stats_vectorized_v6(df_close)
 
     caches_perf_stats = []  # list of tuples in cache
     for symbol in symbols:
@@ -371,9 +377,9 @@ def _5_perf_ranks(df_close, n_top_syms, verbose=False):
             period_yr,
             CAGR[symbol],
             UI[symbol],
-            retnStd_d_UI[symbol],
-            CAGR_d_retnStd[symbol],
-            CAGR_d_UI[symbol],
+            retnStd_div_UI[symbol],
+            CAGR_div_retnStd[symbol],
+            CAGR_div_UI[symbol],
         )
         # append performance data (tuple) to caches_perf_stats (list)
         caches_perf_stats.append(cache)
@@ -488,20 +494,23 @@ def _7_perf_eval(df_close):
     """
 
     import pandas as pd
-    from myUtils import symb_perf_stats_vectorized_v4    
+    from myUtils import symb_perf_stats_vectorized_v6    
 
     (
         symbols,
         period_yr,
+        returns,
         drawdown,
         UI,
-        max_drawdown,
-        returns_std,
-        returns_std_div_UI,
+        maxDrawdown,
+        retnMean,
+        retnStd,
+        retnStd_div_UI,
         CAGR,
-        CAGR_div_returns_std,
+        CAGR_div_retnStd,
         CAGR_div_UI,
-    ) = symb_perf_stats_vectorized_v4(df_close)
+        grp_SumCAGR,
+    ) = symb_perf_stats_vectorized_v6(df_close)
 
     caches_perf_stats_vect = []
     for symbol in symbols:
@@ -515,8 +524,8 @@ def _7_perf_eval(df_close):
             period_yr,
             CAGR[symbol],
             UI[symbol],
-            returns_std_div_UI[symbol],
-            CAGR_div_returns_std[symbol],
+            retnStd_div_UI[symbol],
+            CAGR_div_retnStd[symbol],
             CAGR_div_UI[symbol],
         )
         # append performance data (tuple) to caches_perf_stats (list)
