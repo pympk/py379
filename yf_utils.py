@@ -202,18 +202,20 @@ def _5_perf_ranks_old(df_close, days_lookbacks, verbose=False):
         (
             symbols,
             period_yr,
-            returns,
-            drawdown,
+            retn,
+            DD,
             UI,
-            maxDrawdown,
+            MDD,
             retnMean,
             retnStd,
             retnStd_div_UI,
             CAGR,
             CAGR_div_retnStd,
             CAGR_div_UI,
-            grp_MeanCAGR,
-            grp_StdCAGR,
+            grp_retnStd_div_UI,     
+            grp_CAGR,
+            grp_CAGR_div_retnStd,
+            grp_CAGR_div_UI,  
         ) = symb_perf_stats_vectorized_v8(_df_c)
 
         caches_perf_stats_vect = []
@@ -354,24 +356,28 @@ def _5_perf_ranks(df_close, n_top_syms, verbose=False):
     (
         symbols,
         period_yr,
-        returns,
-        drawdown,
+        retn,
+        DD,
         UI,
-        maxDrawdown,
+        MDD,
         retnMean,
         retnStd,
         retnStd_div_UI,
         CAGR,
         CAGR_div_retnStd,
         CAGR_div_UI,
-        grp_MeanCAGR,
-        grp_StdCAGR,
+        grp_retnStd_div_UI,     
+        grp_CAGR,
+        grp_CAGR_div_retnStd,
+        grp_CAGR_div_UI,  
     ) = symb_perf_stats_vectorized_v8(df_close)
 
     caches_perf_stats = []  # list of tuples in cache
     for symbol in symbols:
-        date_first = drawdown.index[0].strftime("%Y-%m-%d")
-        date_last = drawdown.index[-1].strftime("%Y-%m-%d")
+        # date_first = drawdown.index[0].strftime("%Y-%m-%d")
+        # date_last = drawdown.index[-1].strftime("%Y-%m-%d")
+        date_first = DD.index[0].strftime("%Y-%m-%d")  # drawdown
+        date_last = DD.index[-1].strftime("%Y-%m-%d")        
         cache = (
             symbol,
             date_first,
@@ -501,18 +507,20 @@ def _7_perf_eval_(df_close):
     (
         symbols,
         period_yr,
-        returns,
-        drawdown,
+        retn,
+        DD,
         UI,
-        maxDrawdown,
+        MDD,
         retnMean,
         retnStd,
         retnStd_div_UI,
         CAGR,
         CAGR_div_retnStd,
         CAGR_div_UI,
-        grp_MeanCAGR,
-        grp_StdCAGR,
+        grp_retnStd_div_UI,     
+        grp_CAGR,
+        grp_CAGR_div_retnStd,
+        grp_CAGR_div_UI, 
     ) = symb_perf_stats_vectorized_v8(df_close)
 
     caches_perf_stats_vect = []
@@ -599,18 +607,20 @@ def _7_perf_eval_v1(df_close):
     (
         symbols,
         period_yr,
-        returns,
-        drawdown,
+        retn,
+        DD,
         UI,
-        maxDrawdown,
+        MDD,
         retnMean,
         retnStd,
         retnStd_div_UI,
         CAGR,
         CAGR_div_retnStd,
         CAGR_div_UI,
-        grp_MeanCAGR,
-        grp_StdCAGR,
+        grp_retnStd_div_UI,     
+        grp_CAGR,
+        grp_CAGR_div_retnStd,
+        grp_CAGR_div_UI, 
     ) = symb_perf_stats_vectorized_v8(df_close)
 
     caches_perf_stats_vect = []
